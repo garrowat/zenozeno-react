@@ -7,8 +7,8 @@ const App = () => {
   const [quote, setQuote] = useState('');
   const [inputField, setInputField] = useState('');
 
-  const getQuotes = async (endpoint) => {
-    const response = await fetch(`${endpoint}Life`)
+  const getQuotes = async (endpoint, input) => {
+    const response = await fetch(`${endpoint}${input ? input : 'To live is to'}`)
       .catch((error) => {
         const message = `Error fetching quote from zenozeno API: ${error}`;
         setQuote(message);
@@ -25,7 +25,7 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    getQuotes(ENDPOINT);
+    getQuotes(ENDPOINT, inputField);
   };
 
   return (
@@ -40,7 +40,7 @@ const App = () => {
           Submit
         </button>
       </form>
-      <h2>{quote}</h2>
+      <h2>{quote ? quote : 'loading'}</h2>
     </div>
   );
 };
