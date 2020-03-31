@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 
 const App = () => {
+  const [quote, setQuote] = useState('');
+  const [input, setInput] = useState('');
+
   return (
-    <h1>Hey Universe!!</h1>
+    <div>
+      <input type="text" onChange={setInput} value={input} />
+      <h2></h2>
+    </div>
   );
 };
 
