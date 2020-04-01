@@ -1,26 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader';
 
-const ENDPOINT = process.env.REACT_APP_ENDPOINT || 'https://robotfun.us/zenozeno/quote/';
+const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 
 const App = () => {
-  const [quote, setQuote] = useState('');
+  const [quotes, setQuotes] = useState([]);
   const [inputField, setInputField] = useState('');
+  const [numberOfQuotes, setNumberOfQuotes] = useState(2);
 
-  const getQuotes = async (endpoint, input) => {
-    const response = await fetch(`${endpoint}${input ? input : 'To live is to'}`)
+  const getQuotes = async (endpoint) => {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      redirect: 'follow',
+      body: JSON.stringify({
+        input: inputField || 'The meaning of life is',
+        numberOfQuotes: numberOfQuotes || 1,
+      }),
+    })
       .catch((error) => {
-        const message = `Error fetching quote from zenozeno API: ${error}`;
-        setQuote(message);
+        const message = `Error fetching quote from Zenozeno API: ${error}`;
+        console.log(message);
       });
 
     const quoteData = await response.json()
-      .catch((error) => {
-        const message = `Error fetching quote from zenozeno API: ${error}`;
-        setQuote(message);
-      });
+
     console.log(quoteData)
-    setQuote(quoteData.quotes[2]);
+    setQuotes(quoteData.quotes);
   };
 
   const handleSubmit = (e) => {
@@ -30,6 +40,7 @@ const App = () => {
 
   return (
     <div>
+      <h1>Zenozeno AI Quote Generator</h1>
       <form>
         <input
           type="text"
@@ -40,7 +51,15 @@ const App = () => {
           Submit
         </button>
       </form>
-      <h2>{quote ? quote : 'loading'}</h2>
+      <h2>
+        <ul>
+          {
+            quotes
+              ? quotes.map((quote, index) => <li key={`quote${index}`}>{quote}.</li>)
+              : 'loading'
+          }
+        </ul>
+      </h2>
     </div>
   );
 };
