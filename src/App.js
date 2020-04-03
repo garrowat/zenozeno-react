@@ -14,38 +14,71 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 const GridContainer = styled.div`
-  margin: auto;
   display: grid;
-  grid-template: 30px 80px 30px 100px 1fr auto 30px
-  / 1fr 50px 3fr 50px 1fr;
+  grid-template: 20px 10vmax 5max auto auto auto 1fr
+  / 5px 10px 1fr 1fr;
+  grid-gap: 10px;
 `;
 
-const Title = styled.p`
+const Title = styled.span`
   grid-area: 2 / 3 / 3 / 4;
-  color: #F4AF13;
-  font-size: 5vh;
+  place-self: end stretch;
+  color: #f4af13;
+  font-size: calc(24px + 10vmin);
   font-weight: 100;
 `;
 
-const Description = styled.p`
+const Description = styled.span`
   grid-area: 3 / 3 / 4 / 4;
-  margin-top: 10px;
+  place-self: top stretch;
+  font-size: calc(10px + 5vmin);
 `;
 
 const Form = styled.form`
   grid-area: 4 / 3 / 5 / 4;
-  margin-top: 10px;
-  width: 50vh;
+  place-self: stretch;
   display: flex;
   align-items: center;
 `;
 
-const Quotes = styled.ul`
+const Quotes = styled.div`
   grid-area: 5 / 3 / 6 / 4;
+  place-self: center stretch;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+`;
+
+const Quote = styled.div`
+  padding-top: 10px;
+  padding-bottom: 20px;
+  font-size: calc(12px + 3vmin);
+  transition: all 0.2s ease-in-ease-out;
 `;
 
 const Controls = styled.div`
   grid-area: 6 / 3 / 7 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+`;
+
+const Control = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ControlLabel = styled.label`
+  font-size: 12px;
+`;
+
+const ControlValue = styled.span`
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 4px;
 `;
 
 const About = styled.div`
@@ -54,47 +87,69 @@ const About = styled.div`
 
 const Indicator = styled.div`
   grid-area: 4 / 2 / 5 / 3;
-  align-self: center;
-  justify-self: flex-end;
-  margin-top: 10px;
-  height: 50px;
+  place-self: center end;
+  height: calc(45px + 4vmin);
   width: 5px;
-  background: #000;
-  margin-right: 6px;
+  transition: all 0.5s ease-in-ease-out;
+  background: ${
+    props => props.quotes.length === 0 && !props.isLoading ? '#f7f7f2'
+    : props => props.isLoading ? '#fcdd44' : '#99ee99'
+  };
   border-radius: 1px;
-  background: #f5f4e2;
-  box-shadow: inset 5px 5px 10px #d3d2c2;
+  box-shadow: ${
+    props => props.quotes.length === 0 ? 'inset 1px 1px 3px #d3d2c2'
+    : props => props.isLoading
+      ? 'inset 1px 1px 3px #d3d2c2, 0 0 10px #fdee77, 0 0 20px #fdee77'
+      : 'inset 1px 1px 3px #d3d2c2, 0 0 10px #99ee99'
+  };
 `;
 
 const InputField = styled.input`
-  height: 40px;
+  height: calc(15px + 10vmin);
   border: none;
   border-radius: 2px;
   background: #fdfdfb;
   box-shadow: inset 3px 3px 5px #d3d2c2,
             inset -3px -3px 5px #ffffff;
   font-family: 'Roboto', sans-serif;
-  flex: 1 0 3;
-  font-size: 20px;
+  flex: 0 0 85%;
+  font-size: calc(10px + 5vmin);
   padding: 10px;
 `;
 
 const SubmitButton = styled.button`
-  flex: 0 0 0;
-  margin-right: 10px;
   border: none;
   border-radius: 5px;
-  background: linear-gradient(145deg, #dededa, #ffffff);
-  box-shadow:  5px 5px 10px #d3d2c2,
-             -5px -5px 10px #ffffff;
-  padding: 10px;
-  margin: 10px;
+  background: ${props => props.isLoading ? '#f7f7f2' : 'linear-gradient(145deg, #dededa, #ffffff)'};
+  box-shadow:  ${props => props.isLoading
+    ? '0px 0px 0px #d3d2c2, \
+      -0px -0px 0px #ffffff'
+    : '5px 5px 10px #d3d2c2, \
+      -5px -5px 10px #ffffff'};
+  padding: calc(10px + 2vmin);
+  margin-left: 10px;
   font-family: 'Roboto', sans-serif;
-  font-size: 2.2vh;
+  font-size: calc(10px + 2vmin);
+  transition: all 0.2s ease-in-ease-out;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow:  7px 7px 12px #d3d2c2,
+                -7px -7px 12px #ffffff;
+  }
+`;
+
+const SliderControl = styled.input`
+  -webkit-appearance: slider-vertical;
 `;
 
 const ButtonIcon = styled.span`
+  transition: all 0.2s ease-in-ease-out;
   filter: grayscale(80%);
+
+  ${SubmitButton}:hover & {
+    filter: grayscale(10%);
+  }
 `;
 
 // Main App Component
@@ -107,8 +162,10 @@ const App = () => {
   const [topK, setTopK] = useState(40);
   const [topP, setTopP] = useState(0.9);
   const [temperature, setTemperature] = useState(0.7);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getQuotes = async (endpoint) => {
+    setIsLoading(true);
     const response = await fetch(endpoint, {
       method: 'POST',
       mode: 'cors',
@@ -135,6 +192,7 @@ const App = () => {
 
     console.log(quoteData)
     setQuotes(quoteData.quotes);
+    setIsLoading(false);
   };
 
   const handleSubmit = (e) => {
@@ -153,15 +211,17 @@ const App = () => {
         AI Quote Generator
       </Description>
 
-      <Indicator />
+      <Indicator isLoading={isLoading} quotes={quotes} />
 
       <Form>
         <InputField
+          disabled={isLoading}
           type="text"
           onChange={(e) => setInputField(e.target.value)}
           value={inputField}
+          placeholder="Type a partial sentence, ie. 'Life is'"
         />
-        <SubmitButton type="submit" onClick={handleSubmit}>
+        <SubmitButton isLoading={isLoading} type="submit" onClick={handleSubmit}>
           <ButtonIcon>💡</ButtonIcon>
         </SubmitButton>
       </Form>
@@ -169,47 +229,37 @@ const App = () => {
       <Quotes>
         {
           quotes
-            ? quotes.map((quote, index) => <li key={`quote${index}`}>{quote}.</li>)
+            ? quotes.map((quote, index) => <Quote key={`quote${index}`}>{`${quote}`}.</Quote>)
             : 'loading'
         }
       </Quotes>
 
       <Controls>
-        <div>
-          <p>
-            <label htmlFor="numberOfQuotes">Number of Quotes</label>
-            <span>{numberOfQuotes}</span>
-          </p>
-          <input type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
-        </div>
-        <div>
-          <p>
-            <label htmlFor="maxQuoteLength">Maximum Quote Length</label>
-            <span>{maxQuoteLength}</span>
-          </p>
-          <input type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={1000} step={10} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
-        </div>
-        <div>
-          <p>
-            <label htmlFor="topK">Top K</label>
-            <span>{topK}</span>
-          </p>
-          <input type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
-        </div>
-        <div>
-          <p>
-            <label htmlFor="topP">Top P</label>
-            <span>{topP}</span>
-          </p>
-          <input type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
-        </div>
-        <div>
-          <p>
-            <label htmlFor="temperature">Temperature</label>
-            <span>{temperature}</span>
-          </p>
-          <input type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
-        </div>
+        <Control>
+          <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
+          <ControlValue>{numberOfQuotes}</ControlValue>
+          <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
+        </Control>
+        <Control>
+          <ControlLabel htmlFor="maxQuoteLength">Max Length</ControlLabel>
+          <ControlValue>{maxQuoteLength}</ControlValue>
+          <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={1000} step={10} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
+        </Control>
+        <Control>
+          <ControlLabel htmlFor="topK">Top K</ControlLabel>
+          <ControlValue>{topK}</ControlValue>
+          <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
+        </Control>
+        <Control>
+          <ControlLabel htmlFor="topP">Top P</ControlLabel>
+          <ControlValue>{topP}</ControlValue>
+          <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
+        </Control>
+        <Control>
+          <ControlLabel htmlFor="temperature">Temp&deg;</ControlLabel>
+          <ControlValue>{temperature}</ControlValue>
+          <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
+        </Control>
       </Controls>
 
       <About>
