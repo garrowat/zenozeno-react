@@ -56,7 +56,6 @@ const Quotes = styled.div`
     ? '0px 0px 0px #ebebe6, 0px 0px 0px #fffffe'
     : 'inset 5px 5px 10px #ebebe6, inset -5px -5px 10px #fffffe'
   };
-
 `;
 
 const Quote = styled.span`
