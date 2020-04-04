@@ -15,35 +15,37 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 20px 15vmin 5vmin auto auto auto 1fr
-  / 5px 10px 1fr 1fr;
+  grid-template: 40px 70px 50px auto auto auto 1fr 1fr
+  / 50px 1fr 50px;
   grid-gap: 10px;
 `;
 
 const Title = styled.span`
-  grid-area: 2 / 3 / 3 / 4;
+  grid-area: 2 / 2 / 3 / 3;
   align-self: end;
   color: #f4af13;
-  font-size: calc(12px + 10vmin);
+  font-size: calc(32px + 5vmin);
   font-weight: 100;
 `;
 
 const Description = styled.span`
-  grid-area: 3 / 3 / 4 / 4;
+  grid-area: 3 / 2 / 4 / 3;
   place-self: start stretch;
-  font-size: calc(6px + 4vmin);
+  font-size: calc(14px + 2vmin);
   padding-bottom: 18px;
 `;
 
 const Form = styled.form`
-  grid-area: 4 / 3 / 5 / 4;
+  grid-area: 4 / 2 / 5 / 3;
+  place-self: center stretch;
   display: flex;
   align-items: center;
 `;
 
 const Quotes = styled.div`
-  grid-area: 5 / 3 / 6 / 4;
+  grid-area: 5 / 2 / 6 / 3;
   align-self: center;
+  width: 80vw;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -61,21 +63,41 @@ const Quotes = styled.div`
 const Quote = styled.span`
   padding-top: 10px;
   padding-bottom: 20px;
-  font-family: 'Roboto Mono', monospace;;
-  font-size: calc(12px + 3vmin);
+  font-family: 'Roboto Mono', monospace;
+  font-size: calc(12px + 1vmin);
   opacity:${ props => props.isLoading ? '0' : '1' };
+  transition: all 0.2s ease-in-out;
 
   &:not(:last-child) {
     border-bottom: 1px solid #ebebe6;
   };
-  transition: all 0.2s ease-in-out;
+`;
+
+const MenuBar = styled.div`
+  grid-area: 6 / 2 / 7 / 3;
+  width: 81vw;
+  padding-left: 1px;
+  display: grid;
+  grid-gap: 10px;
+`;
+
+const MenuItem = styled.div`
+  padding: 5px 10px 5px 10px;
+  color: #777;
+  font-size: 16px;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: bold;
+  border-radius: 1px;
+  background: #f7f7f2;
+  box-shadow:  3px 3px 4px #ebebe6,
+              -3px -3px 4px #fffffe;
 `;
 
 const Controls = styled.div`
-  grid-area: 6 / 3 / 7 / 4;
+  grid-area: 7 / 2 / 8 / 3;
+  place-self: center stretch;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  justify-content: space-around;
 `;
 
 const Control = styled.div`
@@ -92,17 +114,12 @@ const ControlLabel = styled.label`
 const ControlValue = styled.span`
   font-size: 15px;
   font-weight: bold;
-  margin-bottom: 4px;
-`;
-
-const About = styled.div`
-  grid-area: 7 / 3 / 8 / 4;
 `;
 
 const Indicator = styled.div`
-  grid-area: 4 / 2 / 5 / 3;
+  grid-area: 4 / 1 / 5 / 2;
   place-self: center end;
-  height: calc(45px + 4vmin);
+  height: calc(20px + 5vmin);
   width: 5px;
   transition: all 0.5s ease-in-out;
   background: ${
@@ -119,15 +136,15 @@ const Indicator = styled.div`
 `;
 
 const InputField = styled.input`
-  height: calc(15px + 10vmin);
+  height: calc(15px + 5vmin);
   border: none;
   border-radius: 2px;
   background: #fdfdfb;
   box-shadow: inset 3px 3px 5px #d3d2c2,
             inset -3px -3px 5px #ffffff;
   font-family: 'Roboto', sans-serif;
-  flex: 0 0 25.5vmin;
-  font-size: calc(10px + 5vmin);
+  font-size: calc(10px + 2vmin);
+  flex: 0 0 80vw;
   padding: 10px;
 `;
 
@@ -140,7 +157,7 @@ const SubmitButton = styled.button`
       -0px -0px 0px #ffffff'
     : '5px 5px 10px #d3d2c2, \
       -5px -5px 10px #ffffff'};
-  padding: calc(10px + 2vmin);
+  padding: calc(8px + 1vmin);
   margin-left: 10px;
   font-family: 'Roboto', sans-serif;
   font-size: calc(10px + 2vmin);
@@ -251,47 +268,49 @@ const App = () => {
         }
       </Quotes>
 
+      <MenuBar>
+        <MenuItem>
+          <span>Options</span>
+        </MenuItem>
+        <MenuItem>
+          <span>About</span>
+        </MenuItem>
+        <MenuItem>
+          <span>Github</span>
+        </MenuItem>
+      </MenuBar>
+
       <Controls>
         <Control>
           <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
           <ControlValue>{numberOfQuotes}</ControlValue>
           <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
         </Control>
+
         <Control>
           <ControlLabel htmlFor="maxQuoteLength">Max Length</ControlLabel>
           <ControlValue>{maxQuoteLength}</ControlValue>
           <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={1000} step={10} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
         </Control>
+
         <Control>
           <ControlLabel htmlFor="topK">Top K</ControlLabel>
           <ControlValue>{topK}</ControlValue>
           <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
         </Control>
+
         <Control>
           <ControlLabel htmlFor="topP">Top P</ControlLabel>
           <ControlValue>{topP}</ControlValue>
           <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
         </Control>
+
         <Control>
           <ControlLabel htmlFor="temperature">Temp&deg;</ControlLabel>
           <ControlValue>{temperature}</ControlValue>
           <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
         </Control>
       </Controls>
-
-      <About>
-        <h2>
-          About Zenozeno
-        </h2>
-        <p></p>
-        <h2>
-          About Zenozeno settings
-        </h2>
-        <p>
-          Top K: Only include the K most likely next words when choosing the next word in a sequence.
-          Top P: Similar to Top K, but dynamically selects the set of next probable words whose cumulative probabilities don't exceed P
-        </p>
-      </About>
     </GridContainer>
   );
 };
