@@ -32,7 +32,9 @@ module.exports = {
     alias: { 'react-dom': '@hot-loader/react-dom'  },
   },
   plugins: [
-    new Dotenv(),
+    new Dotenv({
+      systemvars: true,
+    }),
     new HtmlWebpackPlugin({
       inject: true,
       template: path.resolve('./public/index.html'),
