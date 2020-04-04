@@ -15,45 +15,61 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 20px 10vmax 5max auto auto auto 1fr
+  grid-template: 20px 15vmin 5vmin auto auto auto 1fr
   / 5px 10px 1fr 1fr;
   grid-gap: 10px;
 `;
 
 const Title = styled.span`
   grid-area: 2 / 3 / 3 / 4;
-  place-self: end stretch;
+  align-self: end;
   color: #f4af13;
-  font-size: calc(24px + 10vmin);
+  font-size: calc(12px + 10vmin);
   font-weight: 100;
 `;
 
 const Description = styled.span`
   grid-area: 3 / 3 / 4 / 4;
-  place-self: top stretch;
-  font-size: calc(10px + 5vmin);
+  place-self: start stretch;
+  font-size: calc(6px + 4vmin);
+  padding-bottom: 18px;
 `;
 
 const Form = styled.form`
   grid-area: 4 / 3 / 5 / 4;
-  place-self: stretch;
   display: flex;
   align-items: center;
 `;
 
 const Quotes = styled.div`
   grid-area: 5 / 3 / 6 / 4;
-  place-self: center stretch;
+  align-self: center;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  padding: 10px;
+  border-radius: 1px;
+  background: #f7f7f2;
+  transition: all 0.5s ease-in-out;
+  box-shadow: ${
+    props => props.isLoading
+    ? '0px 0px 0px #ebebe6, 0px 0px 0px #fffffe'
+    : 'inset 5px 5px 10px #ebebe6, inset -5px -5px 10px #fffffe'
+  };
+
 `;
 
-const Quote = styled.div`
+const Quote = styled.span`
   padding-top: 10px;
   padding-bottom: 20px;
+  font-family: 'Roboto Mono', monospace;;
   font-size: calc(12px + 3vmin);
-  transition: all 0.2s ease-in-ease-out;
+  opacity:${ props => props.isLoading ? '0' : '1' };
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #ebebe6;
+  };
+  transition: all 0.2s ease-in-out;
 `;
 
 const Controls = styled.div`
@@ -61,7 +77,6 @@ const Controls = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-
 `;
 
 const Control = styled.div`
@@ -90,7 +105,7 @@ const Indicator = styled.div`
   place-self: center end;
   height: calc(45px + 4vmin);
   width: 5px;
-  transition: all 0.5s ease-in-ease-out;
+  transition: all 0.5s ease-in-out;
   background: ${
     props => props.quotes.length === 0 && !props.isLoading ? '#f7f7f2'
     : props => props.isLoading ? '#fcdd44' : '#99ee99'
@@ -112,7 +127,7 @@ const InputField = styled.input`
   box-shadow: inset 3px 3px 5px #d3d2c2,
             inset -3px -3px 5px #ffffff;
   font-family: 'Roboto', sans-serif;
-  flex: 0 0 85%;
+  flex: 0 0 25.5vmin;
   font-size: calc(10px + 5vmin);
   padding: 10px;
 `;
@@ -130,7 +145,7 @@ const SubmitButton = styled.button`
   margin-left: 10px;
   font-family: 'Roboto', sans-serif;
   font-size: calc(10px + 2vmin);
-  transition: all 0.2s ease-in-ease-out;
+  transition: all 0.2s ease-in-out;
   cursor: pointer;
 
   &:hover {
@@ -144,7 +159,7 @@ const SliderControl = styled.input`
 `;
 
 const ButtonIcon = styled.span`
-  transition: all 0.2s ease-in-ease-out;
+  transition: all 0.2s ease-in-out;
   filter: grayscale(80%);
 
   ${SubmitButton}:hover & {
@@ -226,10 +241,10 @@ const App = () => {
         </SubmitButton>
       </Form>
 
-      <Quotes>
+      <Quotes isLoading={isLoading}>
         {
           quotes
-            ? quotes.map((quote, index) => <Quote key={`quote${index}`}>{`${quote}`}.</Quote>)
+            ? quotes.map((quote, index) => <Quote isLoading={isLoading} key={`quote${index}`}>{`${quote}`}.</Quote>)
             : 'loading'
         }
       </Quotes>
