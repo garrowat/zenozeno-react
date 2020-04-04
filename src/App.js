@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { hot } from 'react-hot-loader';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components'
 
@@ -296,4 +295,4 @@ const App = () => {
   );
 };
 
-export default hot(module)(App);
+export default App;
