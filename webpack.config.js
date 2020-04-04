@@ -1,13 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
-const dotenv = require('dotenv');
+const Dotenv = require('dotenv-webpack');
 
-const env = dotenv.config().parsed;
+// const env = dotenv.config().parsed;
 
-const envKeys = Object.keys(env).reduce((prev, next) => {
-  prev[`process.env.${next}`] = JSON.stringify(env[next]);
-  return prev;
-}, {});
+// const envKeys = Object.keys(env).reduce((prev, next) => {
+//   prev[`process.env.${next}`] = JSON.stringify(env[next]);
+//   return prev;
+// }, {});
 
 module.exports = {
   entry: ['@babel/polyfill', './src/index.js'],
@@ -46,7 +46,7 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.DefinePlugin(envKeys),
+    new Dotenv(),
   ]
 };
 
