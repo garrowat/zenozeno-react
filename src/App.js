@@ -177,6 +177,7 @@ const App = () => {
   const [topP, setTopP] = useState(0.9);
   const [temperature, setTemperature] = useState(0.7);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
@@ -200,6 +201,8 @@ const App = () => {
       .catch((error) => {
         const message = `Error fetching quote from Zenozeno API: ${error}`;
         console.log(message);
+        setIsLoading(false);
+        setHasError(true);
       });
 
     const quoteData = await response.json()
@@ -225,7 +228,7 @@ const App = () => {
         AI Quote Generator
       </Description>
 
-      <Indicator isLoading={isLoading} quotes={quotes} />
+      <Indicator hasError={hasError} isLoading={isLoading} quotes={quotes} />
 
       <Form>
         <InputField
