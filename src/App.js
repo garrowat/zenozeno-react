@@ -149,6 +149,7 @@ const ControlValue = styled.span`
 `;
 
 const About = styled.div`
+  margin-top: 5px;
   max-height: ${
       props => props.showAbout
         ? '1000px'
@@ -161,6 +162,9 @@ const About = styled.div`
 `;
 
 const Github = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
   max-height: ${
       props => props.showGithub
         ? '1000px'
@@ -238,6 +242,31 @@ const SubmitButton = styled.button`
 `;
 
 const SliderControl = styled.input`
+  &::-webkit-slider-runnable-track {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    height: 3px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: inset 1px 1px 3px #d3d2c2;
+    background: #f7f7f2;
+    border-radius: 5px;
+    border: none;
+  }
+
+  &::-webkit-slider-thumb {
+    box-shadow:  2px 2px 3px #ebebe6,
+             -2px -2px 3px #fffffe;
+    border: 1px solid #000000;
+    height: 30px;
+    width: 15px;
+    border-radius: 5px;
+    background: #FFFFFF;
+    cursor: pointer;
+    -webkit-appearance: ;
+    margin-top: -11px;
+  }
 `;
 
 const ButtonIcon = styled.span`
@@ -369,31 +398,31 @@ const App = () => {
 
           <Controls showOptions={showOptions}>
             <Control>
-              <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
+              <ControlLabel htmlFor="numberOfQuotes" title="Generate multiple quotes at once; takes longer to load."># Quotes</ControlLabel>
               <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
               <ControlValue modifier={numberOfQuotes}>{numberOfQuotes}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="maxQuoteLength">Max Length</ControlLabel>
-              <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={1000} step={10} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
+              <ControlLabel htmlFor="maxQuoteLength" title="Longer quotes take longer to load, although they usually don't get very long.">Max Length</ControlLabel>
+              <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={200} step={5} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
               <ControlValue modifier={numberOfQuotes}>{maxQuoteLength}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="topK">Top K</ControlLabel>
+              <ControlLabel htmlFor="topK" title="Higher Top K decreases variance by eliminating unlikely words.">Top K</ControlLabel>
               <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
               <ControlValue modifier={numberOfQuotes}>{topK}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="topP">Top P</ControlLabel>
+              <ControlLabel htmlFor="topP" title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way.">Top P</ControlLabel>
               <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
               <ControlValue modifier={numberOfQuotes}>{topP}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="temperature">Temp&deg;</ControlLabel>
+              <ControlLabel htmlFor="temperature" title="Lower temperature makes the distribution of possible words less random.">Temp&deg;</ControlLabel>
               <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
               <ControlValue modifier={numberOfQuotes}>{temperature}</ControlValue>
             </Control>
@@ -411,11 +440,20 @@ const App = () => {
         <MenuItem>
           <MenuHeader onClick={() => handleExpand('github')}><span>Github</span><span>&#9660;</span></MenuHeader>
           <Github showGithub={showGithub}>
-            Frontend: Backend:
+            <span>
+              <strong>Frontend:</strong><a href="">Zenozeno UI (this site)</a>
+            </span>
+            <span>Tech: Javascript, React, Webpack, Babel, Styled Components</span>
+            <span>Deployed with: Netlify</span>
+            <p />
+            <span>
+              <strong>Backend:</strong><a href="">Zenozeno API Server</a>
+            </span>
+            <span>Tech: Python, Flask, WSGI, Nginx, Pytorch, Tensorflow, Transformers</span>
+            <span>Deployed on: Ubuntu Digital Ocean Droplet</span>
           </Github>
         </MenuItem>
       </MenuBar>
-
     </GridContainer>
   );
 };
