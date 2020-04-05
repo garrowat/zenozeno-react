@@ -104,25 +104,26 @@ const MenuHeader = styled.p`
   display: flex;
   justify-content: space-between;
   margin-top: 0;
+  margin-bottom: 0;
   cursor: pointer;
   user-select: none;
 `;
 
 const Controls = styled.div`
+  display: flex;
+  max-height: ${
+      props => props.showOptions
+        ? '1000px'
+        : '0px'
+    };
+  transition: all 0.7s ease-in-out;
   grid-area: 7 / 2 / 8 / 3;
   place-self: center stretch;
-  display: ${
-    props => props.showOptions
-      ? 'flex'
-      : 'none'
-  };
-  height: ${
-    props => props.showOptions && '100%'
-  };
+  overflow: hidden;
   flex-wrap: wrap;
   justify-content: flex-start;
   padding: 10px;
-  transition: all 0.2s ease-out;
+  padding-top: 0px;
 `;
 
 const Control = styled.div`
@@ -135,7 +136,10 @@ const Control = styled.div`
 `;
 
 const ControlLabel = styled.label`
-  font-size: 12px;
+  font-weight: lighter;
+  font-size: 14px;
+  padding-top: 10px;
+  padding-bottom: 5px;
 `;
 
 const ControlValue = styled.span`
@@ -144,9 +148,29 @@ const ControlValue = styled.span`
   margin-bottom: 15px;
 `;
 
-const About = styled.div``;
+const About = styled.div`
+  max-height: ${
+      props => props.showAbout
+        ? '1000px'
+        : '0px'
+    };
+  transition: all 0.7s ease-in-out;
+  overflow: hidden;
+  font-weight: lighter;
+  font-size: 14px;
+`;
 
-const Github = styled.div``;
+const Github = styled.div`
+  max-height: ${
+      props => props.showGithub
+        ? '1000px'
+        : '0px'
+    };
+  transition: all 0.7s ease-in-out;
+  overflow: hidden;
+  font-weight: lighter;
+  font-size: 14px;
+`;
 
 const Indicator = styled.div`
   grid-area: 4 / 1 / 5 / 2;
@@ -294,11 +318,11 @@ const App = () => {
         break;
 
       case 'about':
-        setShowControls(!showAbout);
+        setShowAbout(!showAbout);
         break;
 
       case 'github':
-        setShowControls(!showGithub);
+        setShowGithub(!showGithub);
         break;
     };
   };
@@ -340,8 +364,9 @@ const App = () => {
       <MenuBar>
         <MenuItem>
           <MenuHeader onClick={() => handleExpand('options')}>
-            <span>Options</span><span>⮟</span>
+            <span>Options</span><span>&#9660;</span>
           </MenuHeader>
+
           <Controls showOptions={showOptions}>
             <Control>
               <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
@@ -375,14 +400,16 @@ const App = () => {
           </Controls>
         </MenuItem>
         <MenuItem>
-          <MenuHeader>About</MenuHeader>
+          <MenuHeader onClick={() => handleExpand('about')}><span>About</span><span>&#9660;</span></MenuHeader>
           <About showAbout={showAbout}>
+            <p>Ever wanted to have your very own insane comedian-philosopher? Look no further.</p>
             <p>Zenozeno is an AI quote bot that does its very best to sound human by predicting the next word in a sequence until it hits a period. </p>
-            <p>Under the hood, Zenozeno was made by fine-tuning the 117M (small) version of OpenAI's GPT-2 language model. The model was fine-tuned on a dataset of </p>
+            <p>Under the hood, Zenozeno was made by fine-tuning the 117M (small) version of OpenAI's GPT-2 language model on a Wikiquotes dataset of around 40,000 quotes.</p>
+            <p>This means that Zenozeno is best at creating short, proverb-like quotables (although GPT-2 makes it pretty good at anything); giving it an input like "Politics is", or "Javascript is not" may work best.</p>
           </About>
         </MenuItem>
         <MenuItem>
-          <MenuHeader>Github</MenuHeader>
+          <MenuHeader onClick={() => handleExpand('github')}><span>Github</span><span>&#9660;</span></MenuHeader>
           <Github showGithub={showGithub}>
             Frontend: Backend:
           </Github>
