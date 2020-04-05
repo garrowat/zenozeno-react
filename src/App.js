@@ -15,8 +15,8 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 40px 70px 50px auto auto auto 1fr 1fr
-  / 50px 1fr 50px;
+  grid-template: 20px 70px 50px auto auto auto 1fr 1fr
+  / 25px 1fr 25px;
   grid-gap: 10px;
 `;
 
@@ -93,18 +93,26 @@ const MenuItem = styled.div`
               -3px -3px 4px #fffffe;
 `;
 
+const MenuHeader = styled.p`
+  margin-top: 0;
+`;
+
 const Controls = styled.div`
   grid-area: 7 / 2 / 8 / 3;
   place-self: center stretch;
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 10px;
 `;
 
 const Control = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-left: 5px;
+  flex: 0 0 1;
 `;
 
 const ControlLabel = styled.label`
@@ -114,6 +122,7 @@ const ControlLabel = styled.label`
 const ControlValue = styled.span`
   font-size: 15px;
   font-weight: bold;
+  margin-bottom: 15px;
 `;
 
 const Indicator = styled.div`
@@ -123,15 +132,21 @@ const Indicator = styled.div`
   width: 5px;
   transition: all 0.5s ease-in-out;
   background: ${
-    props => props.quotes.length === 0 && !props.isLoading ? '#f7f7f2'
-    : props => props.isLoading ? '#fcdd44' : '#99ee99'
+    props => props.hasError
+      ? '#ff7766'
+      : props => props.quotes.length === 0 && !props.isLoading
+        ? '#f7f7f2'
+        : props => props.isLoading ? '#fcdd44' : '#99ee99'
   };
   border-radius: 1px;
   box-shadow: ${
-    props => props.quotes.length === 0 ? 'inset 1px 1px 3px #d3d2c2'
-    : props => props.isLoading
-      ? 'inset 1px 1px 3px #d3d2c2, 0 0 10px #fdee77, 0 0 20px #fdee77'
-      : 'inset 1px 1px 3px #d3d2c2, 0 0 10px #99ee99'
+    props => props.hasError
+      ? 'inset 1px 1px 3px #d3d2c2, 0 0 10px #ff7766'
+      : props => props.quotes.length === 0
+        ? 'inset 1px 1px 3px #d3d2c2'
+        : props => props.isLoading
+          ? 'inset 1px 1px 3px #d3d2c2, 0 0 10px #fdee77, 0 0 20px #fdee77'
+          : 'inset 1px 1px 3px #d3d2c2, 0 0 10px #99ee99'
   };
 `;
 
@@ -164,6 +179,10 @@ const SubmitButton = styled.button`
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 
+  &:focus {
+    outline: none;
+  }
+
   &:hover {
     box-shadow:  7px 7px 12px #d3d2c2,
                 -7px -7px 12px #ffffff;
@@ -171,7 +190,6 @@ const SubmitButton = styled.button`
 `;
 
 const SliderControl = styled.input`
-  -webkit-appearance: slider-vertical;
 `;
 
 const ButtonIcon = styled.span`
@@ -227,6 +245,7 @@ const App = () => {
     console.log(quoteData)
     setQuotes(quoteData.quotes);
     setIsLoading(false);
+    setHasError(false);
   };
 
   const handleSubmit = (e) => {
@@ -270,47 +289,51 @@ const App = () => {
 
       <MenuBar>
         <MenuItem>
-          <span>Options</span>
+          <MenuHeader>
+            Options
+          </MenuHeader>
+          <Controls>
+            <Control>
+              <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
+              <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
+              <ControlValue modifier={numberOfQuotes}>{numberOfQuotes}</ControlValue>
+            </Control>
+
+            <Control>
+              <ControlLabel htmlFor="maxQuoteLength">Max Length</ControlLabel>
+              <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={1000} step={10} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
+              <ControlValue modifier={numberOfQuotes}>{maxQuoteLength}</ControlValue>
+            </Control>
+
+            <Control>
+              <ControlLabel htmlFor="topK">Top K</ControlLabel>
+              <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
+              <ControlValue modifier={numberOfQuotes}>{topK}</ControlValue>
+            </Control>
+
+            <Control>
+              <ControlLabel htmlFor="topP">Top P</ControlLabel>
+              <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
+              <ControlValue modifier={numberOfQuotes}>{topP}</ControlValue>
+            </Control>
+
+            <Control>
+              <ControlLabel htmlFor="temperature">Temp&deg;</ControlLabel>
+              <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
+              <ControlValue modifier={numberOfQuotes}>{temperature}</ControlValue>
+            </Control>
+          </Controls>
         </MenuItem>
         <MenuItem>
-          <span>About</span>
+          <MenuHeader>About</MenuHeader>
         </MenuItem>
         <MenuItem>
-          <span>Github</span>
+          <MenuHeader>Github</MenuHeader>
+          Frontend:
+          Backend:
         </MenuItem>
       </MenuBar>
 
-      <Controls>
-        <Control>
-          <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
-          <ControlValue>{numberOfQuotes}</ControlValue>
-          <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
-        </Control>
-
-        <Control>
-          <ControlLabel htmlFor="maxQuoteLength">Max Length</ControlLabel>
-          <ControlValue>{maxQuoteLength}</ControlValue>
-          <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={1000} step={10} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
-        </Control>
-
-        <Control>
-          <ControlLabel htmlFor="topK">Top K</ControlLabel>
-          <ControlValue>{topK}</ControlValue>
-          <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
-        </Control>
-
-        <Control>
-          <ControlLabel htmlFor="topP">Top P</ControlLabel>
-          <ControlValue>{topP}</ControlValue>
-          <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
-        </Control>
-
-        <Control>
-          <ControlLabel htmlFor="temperature">Temp&deg;</ControlLabel>
-          <ControlValue>{temperature}</ControlValue>
-          <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
-        </Control>
-      </Controls>
     </GridContainer>
   );
 };
