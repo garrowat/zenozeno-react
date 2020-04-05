@@ -45,7 +45,7 @@ const Form = styled.form`
 const Quotes = styled.div`
   grid-area: 5 / 2 / 6 / 3;
   align-self: center;
-  width: 80vw;
+  width: 76.5vw;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -63,6 +63,7 @@ const Quotes = styled.div`
 const Quote = styled.span`
   padding-top: 10px;
   padding-bottom: 20px;
+  padding-left: 10px;
   font-family: 'Roboto Mono', monospace;
   font-size: calc(12px + 1vmin);
   opacity:${ props => props.isLoading ? '0' : '1' };
@@ -89,21 +90,39 @@ const MenuItem = styled.div`
   font-weight: bold;
   border-radius: 1px;
   background: #f7f7f2;
+  transition: all 0.2s ease-out;
   box-shadow:  3px 3px 4px #ebebe6,
               -3px -3px 4px #fffffe;
+
+  ${MenuHeader}:hover & {
+    box-shadow:  7px 7px 12px #d3d2c2,
+                -7px -7px 12px #ffffff;
+  }
 `;
 
 const MenuHeader = styled.p`
+  display: flex;
+  justify-content: space-between;
   margin-top: 0;
+  cursor: pointer;
+  user-select: none;
 `;
 
 const Controls = styled.div`
   grid-area: 7 / 2 / 8 / 3;
   place-self: center stretch;
-  display: flex;
+  display: ${
+    props => props.showOptions
+      ? 'flex'
+      : 'none'
+  };
+  height: ${
+    props => props.showOptions && '100%'
+  };
   flex-wrap: wrap;
   justify-content: flex-start;
   padding: 10px;
+  transition: all 0.2s ease-out;
 `;
 
 const Control = styled.div`
@@ -124,6 +143,10 @@ const ControlValue = styled.span`
   font-weight: bold;
   margin-bottom: 15px;
 `;
+
+const About = styled.div``;
+
+const Github = styled.div``;
 
 const Indicator = styled.div`
   grid-area: 4 / 1 / 5 / 2;
@@ -159,19 +182,20 @@ const InputField = styled.input`
             inset -3px -3px 5px #ffffff;
   font-family: 'Roboto', sans-serif;
   font-size: calc(10px + 2vmin);
-  flex: 0 0 80vw;
+  flex: 0 0 65vw;
   padding: 10px;
 `;
 
 const SubmitButton = styled.button`
   border: none;
   border-radius: 5px;
-  background: ${props => props.isLoading ? '#f7f7f2' : 'linear-gradient(145deg, #dededa, #ffffff)'};
+  background: #f7f7f2;
   box-shadow:  ${props => props.isLoading
     ? '0px 0px 0px #d3d2c2, \
       -0px -0px 0px #ffffff'
     : '5px 5px 10px #d3d2c2, \
       -5px -5px 10px #ffffff'};
+  flex: 0 0 1;
   padding: calc(8px + 1vmin);
   margin-left: 10px;
   font-family: 'Roboto', sans-serif;
@@ -204,20 +228,23 @@ const ButtonIcon = styled.span`
 // Main App Component
 
 const App = () => {
+  // Quotes and Query
   const [quotes, setQuotes] = useState([]);
   const [inputField, setInputField] = useState('');
 
-  //
+  // Controls
   const [numberOfQuotes, setNumberOfQuotes] = useState(2);
   const [maxQuoteLength, setMaxQuoteLength] = useState(100);
   const [topK, setTopK] = useState(40);
   const [topP, setTopP] = useState(0.9);
   const [temperature, setTemperature] = useState(0.7);
 
+  // API Fetch State
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const [showControls, setShowControls] = useState(true);
+  // Information and Options
+  const [showOptions, setShowOptions] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
   const [showGithub, setShowGithub] = useState(false);
 
@@ -262,8 +289,8 @@ const App = () => {
 
   const handleExpand = (item) => {
     switch (item) {
-      case 'controls':
-        setShowControls(!showControls);
+      case 'options':
+        setShowOptions(!showOptions);
         break;
 
       case 'about':
@@ -312,10 +339,10 @@ const App = () => {
 
       <MenuBar>
         <MenuItem>
-          <MenuHeader>
+          <MenuHeader onClick={() => handleExpand('options')}>
             <span>Options</span><span>⮟</span>
           </MenuHeader>
-          <Controls showControls={showControls}>
+          <Controls showOptions={showOptions}>
             <Control>
               <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
               <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
@@ -349,11 +376,16 @@ const App = () => {
         </MenuItem>
         <MenuItem>
           <MenuHeader>About</MenuHeader>
+          <About showAbout={showAbout}>
+            <p>Zenozeno is an AI quote bot that does its very best to sound human by predicting the next word in a sequence until it hits a period. </p>
+            <p>Under the hood, Zenozeno was made by fine-tuning the 117M (small) version of OpenAI's GPT-2 language model. The model was fine-tuned on a dataset of </p>
+          </About>
         </MenuItem>
         <MenuItem>
           <MenuHeader>Github</MenuHeader>
-          Frontend:
-          Backend:
+          <Github showGithub={showGithub}>
+            Frontend: Backend:
+          </Github>
         </MenuItem>
       </MenuBar>
 
