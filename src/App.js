@@ -206,13 +206,20 @@ const ButtonIcon = styled.span`
 const App = () => {
   const [quotes, setQuotes] = useState([]);
   const [inputField, setInputField] = useState('');
+
+  //
   const [numberOfQuotes, setNumberOfQuotes] = useState(2);
   const [maxQuoteLength, setMaxQuoteLength] = useState(100);
   const [topK, setTopK] = useState(40);
   const [topP, setTopP] = useState(0.9);
   const [temperature, setTemperature] = useState(0.7);
+
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  const [showControls, setShowControls] = useState(true);
+  const [showAbout, setShowAbout] = useState(false);
+  const [showGithub, setShowGithub] = useState(false);
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
@@ -253,6 +260,22 @@ const App = () => {
     getQuotes(ENDPOINT, inputField);
   };
 
+  const handleExpand = (item) => {
+    switch (item) {
+      case 'controls':
+        setShowControls(!showControls);
+        break;
+
+      case 'about':
+        setShowControls(!showAbout);
+        break;
+
+      case 'github':
+        setShowControls(!showGithub);
+        break;
+    };
+  };
+
   return (
     <GridContainer>
       <GlobalStyle />
@@ -290,9 +313,9 @@ const App = () => {
       <MenuBar>
         <MenuItem>
           <MenuHeader>
-            Options
+            <span>Options</span><span>⮟</span>
           </MenuHeader>
-          <Controls>
+          <Controls showControls={showControls}>
             <Control>
               <ControlLabel htmlFor="numberOfQuotes"># Quotes</ControlLabel>
               <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
