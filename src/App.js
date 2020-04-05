@@ -441,13 +441,13 @@ const App = () => {
           <MenuHeader onClick={() => handleExpand('github')}><span>Github</span><span>&#9660;</span></MenuHeader>
           <Github showGithub={showGithub}>
             <span>
-              <strong>Frontend:</strong><a href="">Zenozeno UI (this site)</a>
+              <strong>Frontend:</strong><a href="https://github.com/garrowat/zenozeno-react">Zenozeno UI (this site)</a>
             </span>
             <span>Tech: Javascript, React, Webpack, Babel, Styled Components</span>
             <span>Deployed with: Netlify</span>
             <p />
             <span>
-              <strong>Backend:</strong><a href="">Zenozeno API Server</a>
+              <strong>Backend:</strong><a href="https://github.com/garrowat/zenozeno-torch">Zenozeno API Server</a>
             </span>
             <span>Tech: Python, Flask, WSGI, Nginx, Pytorch, Tensorflow, Transformers</span>
             <span>Deployed on: Ubuntu Digital Ocean Droplet</span>
