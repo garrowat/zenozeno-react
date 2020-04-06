@@ -124,6 +124,8 @@ const Controls = styled.div`
   justify-content: flex-start;
   padding: 10px;
   padding-top: 0px;
+  font-weight: lighter;
+  font-size: 14px;
 `;
 
 const Control = styled.div`
@@ -258,13 +260,13 @@ const SliderControl = styled.input`
   &::-webkit-slider-thumb {
     box-shadow:  2px 2px 3px #ebebe6,
              -2px -2px 3px #fffffe;
-    border: 1px solid #000000;
-    height: 30px;
+    height: 20px;
     width: 15px;
     border-radius: 5px;
+    border-style: none;
     background: #FFFFFF;
     cursor: pointer;
-    -webkit-appearance: ;
+    -webkit-appearance: none;
     margin-top: -11px;
   }
 `;
@@ -276,6 +278,40 @@ const ButtonIcon = styled.span`
   ${SubmitButton}:hover & {
     filter: grayscale(10%);
   }
+`;
+
+const ToolTip = styled.div`
+  position: absolute;
+  width: 100px;
+  padding: 10px;
+  border-radius: 5px;
+  background: #777;
+  color: #f7f7f2;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  opacity: ${props => props.showTooltip === props.tipName
+    ? '1'
+    : '0'
+  };
+  visibility: ${props => props.showTooltip === props.tipName
+    ? 'visible'
+    : 'hidden'
+  };
+  transition: opacity 0.2s ease-in-out;
+`;
+
+const InfoButton = styled.div`
+  z-index: 100;
+  display: inline-block;
+  padding: 3px;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-radius: 50%;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 8.5px;
+  background: #777;
+  color: #f7f7f2;
+
 `;
 
 // Main App Component
@@ -297,9 +333,10 @@ const App = () => {
   const [hasError, setHasError] = useState(false);
 
   // Information and Options
-  const [showOptions, setShowOptions] = useState(true);
+  const [showOptions, setShowOptions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showGithub, setShowGithub] = useState(false);
+  const [showTooltip, setShowTooltip] = useState('none');
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
@@ -343,14 +380,20 @@ const App = () => {
   const handleExpand = (item) => {
     switch (item) {
       case 'options':
+        setShowAbout(false);
+        setShowGithub(false);
         setShowOptions(!showOptions);
         break;
 
       case 'about':
+        setShowOptions(false);
+        setShowGithub(false);
         setShowAbout(!showAbout);
         break;
 
       case 'github':
+        setShowAbout(false);
+        setShowOptions(false);
         setShowGithub(!showGithub);
         break;
     };
@@ -397,34 +440,92 @@ const App = () => {
           </MenuHeader>
 
           <Controls showOptions={showOptions}>
+            <p>
+              You can adjust the way that Zenozeno generates quotes using these controls. Hover or tap the ? button beside a control to learn more.
+            </p>
             <Control>
-              <ControlLabel htmlFor="numberOfQuotes" title="Generate multiple quotes at once; takes longer to load."># Quotes</ControlLabel>
+              <ControlLabel htmlFor="numberOfQuotes" title="Choose how many quotes to generate at once; more take longer to load.">
+                # Quotes&nbsp;
+                <InfoButton
+                  onMouseEnter={() => setShowTooltip('numberOfQuotes')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
+                  ?
+                </InfoButton>
+                <ToolTip tipName="numberOfQuotes" showTooltip={showTooltip}>
+                  Choose how many quotes to generate at once; more take longer to load.
+                </ToolTip>
+              </ControlLabel>
               <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
-              <ControlValue modifier={numberOfQuotes}>{numberOfQuotes}</ControlValue>
+              <ControlValue>{numberOfQuotes}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="maxQuoteLength" title="Longer quotes take longer to load, although they usually don't get very long.">Max Length</ControlLabel>
+              <ControlLabel htmlFor="maxQuoteLength" title="Longer quotes take longer to load, although they usually don't get very long.">
+                Max Length&nbsp;
+                <InfoButton
+                  onMouseEnter={() => setShowTooltip('maxQuoteLength')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
+                  ?
+                </InfoButton>
+                <ToolTip tipName="maxQuoteLength" showTooltip={showTooltip}>
+                  Longer quotes take longer to load, although they usually don't get very long.
+                </ToolTip>
+              </ControlLabel>
               <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={200} step={5} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
-              <ControlValue modifier={numberOfQuotes}>{maxQuoteLength}</ControlValue>
+              <ControlValue>{maxQuoteLength}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="topK" title="Higher Top K decreases variance by eliminating unlikely words.">Top K</ControlLabel>
+              <ControlLabel htmlFor="topK" title="Higher Top K decreases variance by eliminating unlikely words.">
+                Top K&nbsp;
+                <InfoButton
+                  onMouseEnter={() => setShowTooltip('topK')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
+                  ?
+                </InfoButton>
+                <ToolTip tipName="topK" showTooltip={showTooltip}>
+                  Higher Top K decreases variance by eliminating unlikely words.
+                </ToolTip>
+              </ControlLabel>
               <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
-              <ControlValue modifier={numberOfQuotes}>{topK}</ControlValue>
+              <ControlValue>{topK}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="topP" title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way.">Top P</ControlLabel>
+              <ControlLabel htmlFor="topP" title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way.">
+                Top P&nbsp;
+                <InfoButton
+                  onMouseEnter={() => setShowTooltip('topP')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
+                  ?
+                </InfoButton>
+                <ToolTip tipName="topP" showTooltip={showTooltip}>
+                  Higher Top P decreases variance by also eliminating unlikely words, but in a different way.
+                </ToolTip>
+              </ControlLabel>
               <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
-              <ControlValue modifier={numberOfQuotes}>{topP}</ControlValue>
+              <ControlValue>{topP}</ControlValue>
             </Control>
 
             <Control>
-              <ControlLabel htmlFor="temperature" title="Lower temperature makes the distribution of possible words less random.">Temp&deg;</ControlLabel>
+              <ControlLabel htmlFor="temperature" title="Lower temperature makes the distribution of possible words less random.">
+                Temperature&nbsp;
+                <InfoButton
+                  onMouseEnter={() => setShowTooltip('temperature')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
+                  ?
+                </InfoButton>
+                <ToolTip tipName="temperature" showTooltip={showTooltip}>
+                  Lower temperature makes the distribution of possible words less random.
+                </ToolTip>
+              </ControlLabel>
               <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
-              <ControlValue modifier={numberOfQuotes}>{temperature}</ControlValue>
+              <ControlValue>{temperature}</ControlValue>
             </Control>
           </Controls>
         </MenuItem>
@@ -441,13 +542,13 @@ const App = () => {
           <MenuHeader onClick={() => handleExpand('github')}><span>Github</span><span>&#9660;</span></MenuHeader>
           <Github showGithub={showGithub}>
             <span>
-              <strong>Frontend:</strong><a href="https://github.com/garrowat/zenozeno-react">Zenozeno UI (this site)</a>
+              <strong>Frontend: </strong><a href="https://github.com/garrowat/zenozeno-react">Zenozeno UI (this site)</a>
             </span>
             <span>Tech: Javascript, React, Webpack, Babel, Styled Components</span>
             <span>Deployed with: Netlify</span>
             <p />
             <span>
-              <strong>Backend:</strong><a href="https://github.com/garrowat/zenozeno-torch">Zenozeno API Server</a>
+              <strong>Backend: </strong><a href="https://github.com/garrowat/zenozeno-torch">Zenozeno API Server</a>
             </span>
             <span>Tech: Python, Flask, WSGI, Nginx, Pytorch, Tensorflow, Transformers</span>
             <span>Deployed on: Ubuntu Digital Ocean Droplet</span>
