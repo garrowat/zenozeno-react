@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, {keyframes, css} from 'styled-components';
 import { createGlobalStyle } from 'styled-components'
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
