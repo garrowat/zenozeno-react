@@ -108,8 +108,19 @@ const MenuHeader = styled.p`
   user-select: none;
 `;
 
+const RowContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+`;
+
+const ContentDescription = styled.p`
+
+`;
+
 const Controls = styled.div`
   display: flex;
+  flex-direction: column;
   max-height: ${
       props => props.showOptions
         ? '1000px'
@@ -200,6 +211,7 @@ const Indicator = styled.div`
           ? 'inset 1px 1px 3px #d3d2c2, 0 0 10px #fdee77, 0 0 20px #fdee77'
           : 'inset 1px 1px 3px #d3d2c2, 0 0 10px #99ee99'
   };
+  animation: ${ props => props.isLoading ? css`${keyFrameIndicator} 1s ease-in-out 0s infinite` : '' };
 `;
 
 const InputField = styled.input`
@@ -310,7 +322,18 @@ const InfoButton = styled.div`
   font-size: 8.5px;
   background: #777;
   color: #f7f7f2;
+`;
 
+const keyFrameIndicator = keyframes`
+  0% {
+    background: #fcdd44;
+  }
+  50% {
+    background: #ff8;
+  }
+  100% {
+    background: #fcdd44;
+  }
 `;
 
 // Main App Component
@@ -437,95 +460,96 @@ const App = () => {
           <MenuHeader onClick={() => handleExpand('options')}>
             <span>Options</span><span>&#9660;</span>
           </MenuHeader>
-
           <Controls showOptions={showOptions}>
-            <p>
+            <ContentDescription>
               You can adjust the way that Zenozeno generates quotes using these controls. Hover or tap the ? button beside a control to learn more.
-            </p>
-            <Control>
-              <ControlLabel htmlFor="numberOfQuotes" title="Choose how many quotes to generate at once; more take longer to load.">
-                # Quotes&nbsp;
-                <InfoButton
-                  onMouseEnter={() => setShowTooltip('numberOfQuotes')}
-                  onMouseLeave={() => setShowTooltip('none')}
-                >
-                  ?
-                </InfoButton>
-                <ToolTip tipName="numberOfQuotes" showTooltip={showTooltip}>
-                  Choose how many quotes to generate at once; more take longer to load.
-                </ToolTip>
-              </ControlLabel>
-              <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
-              <ControlValue>{numberOfQuotes}</ControlValue>
-            </Control>
+            </ContentDescription>
+            <RowContainer>
+              <Control>
+                <ControlLabel htmlFor="numberOfQuotes" title="Choose how many quotes to generate at once; more take longer to load.">
+                  # Quotes&nbsp;
+                  <InfoButton
+                    onMouseEnter={() => setShowTooltip('numberOfQuotes')}
+                    onMouseLeave={() => setShowTooltip('none')}
+                  >
+                    ?
+                  </InfoButton>
+                  <ToolTip tipName="numberOfQuotes" showTooltip={showTooltip}>
+                    Choose how many quotes to generate at once; more take longer to load.
+                  </ToolTip>
+                </ControlLabel>
+                <SliderControl type="range" value={numberOfQuotes} name="numberOfQuotes" min={1} max={5} onChange={(e) => setNumberOfQuotes(Number(e.target.value))} />
+                <ControlValue>{numberOfQuotes}</ControlValue>
+              </Control>
 
-            <Control>
-              <ControlLabel htmlFor="maxQuoteLength" title="Longer quotes take longer to load, although they usually don't get very long.">
-                Max Length&nbsp;
-                <InfoButton
-                  onMouseEnter={() => setShowTooltip('maxQuoteLength')}
-                  onMouseLeave={() => setShowTooltip('none')}
-                >
-                  ?
-                </InfoButton>
-                <ToolTip tipName="maxQuoteLength" showTooltip={showTooltip}>
-                  Longer quotes take longer to load, although they usually don't get very long.
-                </ToolTip>
-              </ControlLabel>
-              <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={200} step={5} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
-              <ControlValue>{maxQuoteLength}</ControlValue>
-            </Control>
+              <Control>
+                <ControlLabel htmlFor="maxQuoteLength" title="Longer quotes take longer to load, although they usually don't get very long.">
+                  Max Length&nbsp;
+                  <InfoButton
+                    onMouseEnter={() => setShowTooltip('maxQuoteLength')}
+                    onMouseLeave={() => setShowTooltip('none')}
+                  >
+                    ?
+                  </InfoButton>
+                  <ToolTip tipName="maxQuoteLength" showTooltip={showTooltip}>
+                    Longer quotes take longer to load, although they usually don't get very long.
+                  </ToolTip>
+                </ControlLabel>
+                <SliderControl type="range" value={maxQuoteLength} name="maxQuoteLength" min={10} max={200} step={5} onChange={(e) => setMaxQuoteLength(Number(e.target.value))} />
+                <ControlValue>{maxQuoteLength}</ControlValue>
+              </Control>
 
-            <Control>
-              <ControlLabel htmlFor="topK" title="Higher Top K decreases variance by eliminating unlikely words.">
-                Top K&nbsp;
-                <InfoButton
-                  onMouseEnter={() => setShowTooltip('topK')}
-                  onMouseLeave={() => setShowTooltip('none')}
-                >
-                  ?
-                </InfoButton>
-                <ToolTip tipName="topK" showTooltip={showTooltip}>
-                  Higher Top K decreases variance by eliminating unlikely words.
-                </ToolTip>
-              </ControlLabel>
-              <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
-              <ControlValue>{topK}</ControlValue>
-            </Control>
+              <Control>
+                <ControlLabel htmlFor="topK" title="Higher Top K decreases variance by eliminating unlikely words.">
+                  Top K&nbsp;
+                  <InfoButton
+                    onMouseEnter={() => setShowTooltip('topK')}
+                    onMouseLeave={() => setShowTooltip('none')}
+                  >
+                    ?
+                  </InfoButton>
+                  <ToolTip tipName="topK" showTooltip={showTooltip}>
+                    Higher Top K decreases variance by eliminating unlikely words.
+                  </ToolTip>
+                </ControlLabel>
+                <SliderControl type="range" value={topK} name="topK" min={0} max={150} step={5} onChange={(e) => setTopK(Number(e.target.value))} />
+                <ControlValue>{topK}</ControlValue>
+              </Control>
 
-            <Control>
-              <ControlLabel htmlFor="topP" title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way.">
-                Top P&nbsp;
-                <InfoButton
-                  onMouseEnter={() => setShowTooltip('topP')}
-                  onMouseLeave={() => setShowTooltip('none')}
-                >
-                  ?
-                </InfoButton>
-                <ToolTip tipName="topP" showTooltip={showTooltip}>
-                  Higher Top P decreases variance by also eliminating unlikely words, but in a different way.
-                </ToolTip>
-              </ControlLabel>
-              <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
-              <ControlValue>{topP}</ControlValue>
-            </Control>
+              <Control>
+                <ControlLabel htmlFor="topP" title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way.">
+                  Top P&nbsp;
+                  <InfoButton
+                    onMouseEnter={() => setShowTooltip('topP')}
+                    onMouseLeave={() => setShowTooltip('none')}
+                  >
+                    ?
+                  </InfoButton>
+                  <ToolTip tipName="topP" showTooltip={showTooltip}>
+                    Higher Top P decreases variance by also eliminating unlikely words, but in a different way.
+                  </ToolTip>
+                </ControlLabel>
+                <SliderControl type="range" value={topP} name="topP" min={0} max={1} step={0.05} onChange={(e) => setTopP(Number(e.target.value))} />
+                <ControlValue>{topP}</ControlValue>
+              </Control>
 
-            <Control>
-              <ControlLabel htmlFor="temperature" title="Lower temperature makes the distribution of possible words less random.">
-                Temperature&nbsp;
-                <InfoButton
-                  onMouseEnter={() => setShowTooltip('temperature')}
-                  onMouseLeave={() => setShowTooltip('none')}
-                >
-                  ?
-                </InfoButton>
-                <ToolTip tipName="temperature" showTooltip={showTooltip}>
-                  Lower temperature makes the distribution of possible words less random.
-                </ToolTip>
-              </ControlLabel>
-              <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
-              <ControlValue>{temperature}</ControlValue>
-            </Control>
+              <Control>
+                <ControlLabel htmlFor="temperature" title="Lower temperature makes the distribution of possible words less random.">
+                  Temperature&nbsp;
+                  <InfoButton
+                    onMouseEnter={() => setShowTooltip('temperature')}
+                    onMouseLeave={() => setShowTooltip('none')}
+                  >
+                    ?
+                  </InfoButton>
+                  <ToolTip tipName="temperature" showTooltip={showTooltip}>
+                    Lower temperature makes the distribution of possible words less random.
+                  </ToolTip>
+                </ControlLabel>
+                <SliderControl type="range" value={temperature} name="temperature" min={0} max={1} step={0.01} onChange={(e) => setTemperature(Number(e.target.value))} />
+                <ControlValue>{temperature}</ControlValue>
+              </Control>
+            </RowContainer>
           </Controls>
         </MenuItem>
         <MenuItem>
