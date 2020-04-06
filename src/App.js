@@ -326,13 +326,13 @@ const InfoButton = styled.div`
 
 const keyFrameIndicator = keyframes`
   0% {
-    background: #fcdd44;
+    background: #dabb33;
   }
   50% {
-    background: #ff8;
+    background: #fcdd44;
   }
   100% {
-    background: #fcdd44;
+    background: #dabb33;
   }
 `;
 
