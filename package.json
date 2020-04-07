@@ -27,14 +27,14 @@
     "@hot-loader/react-dom": "^16.8.6",
     "babel-loader": "^8.1.0",
     "dotenv": "^8.2.0",
+    "html-webpack-plugin": "^4.0.4",
+    "social-tags-webpack-plugin": "^1.1.0",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.7",
-    "dotenv-webpack": "^1.7.0",
-    "html-webpack-plugin": "^4.0.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hot-loader": "^4.12.20",
