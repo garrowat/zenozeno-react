@@ -15,24 +15,36 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 20px 70px 50px auto auto auto 1fr 1fr
+  grid-template: 20px 70px 70px auto auto auto 1fr 1fr
   / 25px 1fr 25px;
-  grid-gap: 10px;
+  grid-gap: calc(5px + 1vmin);
 `;
 
 const Title = styled.span`
   grid-area: 2 / 2 / 3 / 3;
-  align-self: end;
+  align-self: bottom;
   color: #f4af13;
   font-size: calc(32px + 5vmin);
   font-weight: 100;
 `;
 
-const Description = styled.span`
+const DescriptionContainer = styled.div`
   grid-area: 3 / 2 / 4 / 3;
   place-self: start stretch;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+`;
+
+const Description = styled.span`
   font-size: calc(14px + 2vmin);
-  padding-bottom: 18px;
+`;
+
+const More = styled.span`
+  margin-top: 5px;
+  font-size: calc(7px + 1vmin);
+  font-weight: bold;
+  color: #905900;
 `;
 
 const Form = styled.form`
@@ -152,7 +164,8 @@ const ControlLabel = styled.label`
   font-weight: lighter;
   font-size: 14px;
   padding-top: 10px;
-  padding-bottom: 5px;
+  margin-bottom: 10px;
+  border-bottom: 1px dotted grey;
 `;
 
 const ControlValue = styled.span`
@@ -174,12 +187,12 @@ const About = styled.div`
   font-size: 14px;
 `;
 
-const Github = styled.div`
+const Tech = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 10px;
   max-height: ${
-      props => props.showGithub
+      props => props.showTech
         ? '1000px'
         : '0px'
     };
@@ -187,6 +200,11 @@ const Github = styled.div`
   overflow: hidden;
   font-weight: lighter;
   font-size: 14px;
+`;
+
+const Disclaimer = styled.span`
+  grid-area: 7 / 2 / 8 / 3;
+  font-size: 12px;
 `;
 
 const Indicator = styled.div`
@@ -294,11 +312,12 @@ const ButtonIcon = styled.span`
 
 const ToolTip = styled.div`
   position: absolute;
-  width: 100px;
+  width: 150px;
   padding: 10px;
   border-radius: 5px;
   background: #777;
   color: #f7f7f2;
+  text-align: center;
   font-family: 'Roboto', sans-serif;
   font-size: 13px;
   opacity: ${props => props.showTooltip === props.tipName
@@ -310,19 +329,6 @@ const ToolTip = styled.div`
     : 'hidden'
   };
   transition: opacity 0.2s ease-in-out;
-`;
-
-const InfoButton = styled.div`
-  z-index: 100;
-  display: inline-block;
-  padding: 3px;
-  padding-left: 6px;
-  padding-right: 6px;
-  border-radius: 50%;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 8.5px;
-  background: #777;
-  color: #f7f7f2;
 `;
 
 const keyFrameIndicator = keyframes`
@@ -358,7 +364,7 @@ const App = () => {
   // Information and Options
   const [showOptions, setShowOptions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
-  const [showGithub, setShowGithub] = useState(false);
+  const [showTech, setShowTech] = useState(false);
   const [showTooltip, setShowTooltip] = useState('none');
 
   const getQuotes = async (endpoint) => {
@@ -404,20 +410,20 @@ const App = () => {
     switch (item) {
       case 'options':
         setShowAbout(false);
-        setShowGithub(false);
+        setShowTech(false);
         setShowOptions(!showOptions);
         break;
 
       case 'about':
         setShowOptions(false);
-        setShowGithub(false);
+        setShowTech(false);
         setShowAbout(!showAbout);
         break;
 
-      case 'github':
+      case 'tech':
         setShowAbout(false);
         setShowOptions(false);
-        setShowGithub(!showGithub);
+        setShowTech(!showTech);
         break;
     };
   };
@@ -429,9 +435,14 @@ const App = () => {
         Zenozeno
       </Title>
 
-      <Description>
-        AI Quote Generator
-      </Description>
+      <DescriptionContainer>
+        <Description>
+          AI Quote Generator
+        </Description>
+        <More>
+          Warning: Zenozeno can be a bit strange or disturbing at times. Bad bot!
+        </More>
+      </DescriptionContainer>
 
       <Indicator hasError={hasError} isLoading={isLoading} quotes={quotes} />
 
@@ -463,18 +474,17 @@ const App = () => {
           </MenuHeader>
           <Controls showOptions={showOptions}>
             <ContentDescription>
-              You can adjust the way that Zenozeno generates quotes using these controls. Hover or tap the ? button beside a control to learn more.
+              You can adjust the way that Zenozeno generates quotes using these controls. Hover or tap a control's label (e.g. "# Quotes") to learn more.
             </ContentDescription>
             <RowContainer>
               <Control>
-                <ControlLabel htmlFor="numberOfQuotes" title="Choose how many quotes to generate at once; more take longer to load.">
+                <ControlLabel
+                  htmlFor="numberOfQuotes"
+                  title="Choose how many quotes to generate at once; more take longer to load."
+                  onMouseEnter={() => setShowTooltip('numberOfQuotes')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
                   # Quotes&nbsp;
-                  <InfoButton
-                    onMouseEnter={() => setShowTooltip('numberOfQuotes')}
-                    onMouseLeave={() => setShowTooltip('none')}
-                  >
-                    ?
-                  </InfoButton>
                   <ToolTip tipName="numberOfQuotes" showTooltip={showTooltip}>
                     Choose how many quotes to generate at once; more take longer to load.
                   </ToolTip>
@@ -484,14 +494,13 @@ const App = () => {
               </Control>
 
               <Control>
-                <ControlLabel htmlFor="maxQuoteLength" title="Longer quotes take longer to load, although they usually don't get very long.">
+                <ControlLabel
+                  htmlFor="maxQuoteLength"
+                  title="Longer quotes take longer to load, although they usually don't get very long."
+                  onMouseEnter={() => setShowTooltip('maxQuoteLength')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
                   Max Length&nbsp;
-                  <InfoButton
-                    onMouseEnter={() => setShowTooltip('maxQuoteLength')}
-                    onMouseLeave={() => setShowTooltip('none')}
-                  >
-                    ?
-                  </InfoButton>
                   <ToolTip tipName="maxQuoteLength" showTooltip={showTooltip}>
                     Longer quotes take longer to load, although they usually don't get very long.
                   </ToolTip>
@@ -501,14 +510,13 @@ const App = () => {
               </Control>
 
               <Control>
-                <ControlLabel htmlFor="topK" title="Higher Top K decreases variance by eliminating unlikely words.">
+                <ControlLabel
+                  htmlFor="topK"
+                  title="Higher Top K decreases variance by eliminating unlikely words."
+                  onMouseEnter={() => setShowTooltip('topK')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
                   Top K&nbsp;
-                  <InfoButton
-                    onMouseEnter={() => setShowTooltip('topK')}
-                    onMouseLeave={() => setShowTooltip('none')}
-                  >
-                    ?
-                  </InfoButton>
                   <ToolTip tipName="topK" showTooltip={showTooltip}>
                     Higher Top K decreases variance by eliminating unlikely words.
                   </ToolTip>
@@ -518,14 +526,13 @@ const App = () => {
               </Control>
 
               <Control>
-                <ControlLabel htmlFor="topP" title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way.">
+                <ControlLabel
+                  htmlFor="topP"
+                  title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way."
+                  onMouseEnter={() => setShowTooltip('topP')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
                   Top P&nbsp;
-                  <InfoButton
-                    onMouseEnter={() => setShowTooltip('topP')}
-                    onMouseLeave={() => setShowTooltip('none')}
-                  >
-                    ?
-                  </InfoButton>
                   <ToolTip tipName="topP" showTooltip={showTooltip}>
                     Higher Top P decreases variance by also eliminating unlikely words, but in a different way.
                   </ToolTip>
@@ -535,14 +542,13 @@ const App = () => {
               </Control>
 
               <Control>
-                <ControlLabel htmlFor="temperature" title="Lower temperature makes the distribution of possible words less random.">
+                <ControlLabel
+                  htmlFor="temperature"
+                  title="Lower temperature makes the distribution of possible words less random."
+                  onMouseEnter={() => setShowTooltip('temperature')}
+                  onMouseLeave={() => setShowTooltip('none')}
+                >
                   Temperature&nbsp;
-                  <InfoButton
-                    onMouseEnter={() => setShowTooltip('temperature')}
-                    onMouseLeave={() => setShowTooltip('none')}
-                  >
-                    ?
-                  </InfoButton>
                   <ToolTip tipName="temperature" showTooltip={showTooltip}>
                     Lower temperature makes the distribution of possible words less random.
                   </ToolTip>
@@ -558,13 +564,13 @@ const App = () => {
           <About showAbout={showAbout}>
             <p>Ever wanted to have your very own insane comedian-philosopher? Look no further.</p>
             <p>Zenozeno is an AI quote bot that does its very best to sound human by predicting the next word in a sequence until it hits a period. </p>
-            <p>Under the hood, Zenozeno was made by fine-tuning the 117M (small) version of OpenAI's GPT-2 language model on a Wikiquotes dataset of around 40,000 quotes.</p>
+            <p>Under the hood, Zenozeno was made by fine-tuning the 117M (small) version of <a href="https://openai.com/blog/better-language-models/">OpenAI's GPT-2 language model</a> on a Wikiquotes dataset of around 40,000 quotes.</p>
             <p>This means that Zenozeno is best at creating short, proverb-like quotables (although GPT-2 makes it pretty good at anything); giving it an input like "Politics is", or "Javascript is not" may work best.</p>
           </About>
         </MenuItem>
         <MenuItem>
-          <MenuHeader onClick={() => handleExpand('github')}><span>Github</span><span>&#9660;</span></MenuHeader>
-          <Github showGithub={showGithub}>
+          <MenuHeader onClick={() => handleExpand('tech')}><span>Tech</span><span>&#9660;</span></MenuHeader>
+          <Tech showTech={showTech}>
             <span>
               <strong>Frontend: </strong><a href="https://github.com/garrowat/zenozeno-react">Zenozeno UI (this site)</a>
             </span>
@@ -576,9 +582,12 @@ const App = () => {
             </span>
             <span>Tech: Python, Flask, WSGI, Nginx, Pytorch, Tensorflow, Transformers</span>
             <span>Deployed on: Ubuntu Digital Ocean Droplet</span>
-          </Github>
+          </Tech>
         </MenuItem>
       </MenuBar>
+      <Disclaimer>
+        Zenozeno does not store user data; any persisted data is stored locally on your device.
+      </Disclaimer>
     </GridContainer>
   );
 };
