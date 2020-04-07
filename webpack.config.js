@@ -47,6 +47,7 @@ module.exports = {
     hotOnly: true
   },
   plugins: [
+    new Dotenv(),
     new SocialTags({
       appUrl: 'https://zenozeno.garrettwatson.io/',
       facebook: {
@@ -64,7 +65,6 @@ module.exports = {
       favicon: "./src/favicons/zeno16.ico"
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new Dotenv(),
   ]
 };
 
