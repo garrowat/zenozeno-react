@@ -47,7 +47,7 @@ module.exports = {
         'og:url': "https://zenozeno.garrettwatson.io/",
         'og:type': "website",
         'og:title': "Zenozeno",
-        'og:image': path.resolve('./src/images/zenozeno.png'),
+        'og:image': "./src/images/zenozeno.png",
         'og:description': "AI Quote bot based on GPT-2",
         'og:site_name': "Zenozeno",
         'og:locale': "en_US",
