@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const SocialTags = require('social-tags-webpack-plugin');
 
 module.exports = {
   entry: ['@babel/polyfill', './src/index.js'],
@@ -38,6 +39,20 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: path.resolve('./public/index.html'),
+      favicon: path.resolve('./src/favicons/zeno16.ico'),
+    }),
+    new SocialTags({
+      appUrl: 'https://zenozeno.garrettwatson.io/',
+      facebook: {
+        'og:url': "https://zenozeno.garrettwatson.io/",
+        'og:type': "website",
+        'og:title': "Zenozeno",
+        'og:image': path.resolve('./src/images/zenozeno.png'),
+        'og:description': "AI Quote bot based on GPT-2",
+        'og:site_name': "Zenozeno",
+        'og:locale': "en_US",
+        'og:article:author': "Garrett Watson",
+      },
     }),
   ]
 };
