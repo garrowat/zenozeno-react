@@ -47,11 +47,6 @@ module.exports = {
     hotOnly: true
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      favicon: "./src/favicons/zeno16.ico"
-    }),
-    new webpack.HotModuleReplacementPlugin(),
-    new Dotenv(),
     new SocialTags({
       appUrl: 'https://zenozeno.garrettwatson.io/',
       facebook: {
@@ -65,6 +60,11 @@ module.exports = {
         'og:article:author': "Garrett Watson",
       },
     }),
+    new HtmlWebpackPlugin({
+      favicon: "./src/favicons/zeno16.ico"
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new Dotenv(),
   ]
 };
 
