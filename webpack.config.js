@@ -36,11 +36,6 @@ module.exports = {
     new Dotenv({
       systemvars: true,
     }),
-    new HtmlWebpackPlugin({
-      inject: true,
-      template: path.resolve('./public/index.html'),
-      favicon: path.resolve('./src/favicons/zeno16.ico'),
-    }),
     new SocialTags({
       appUrl: 'https://zenozeno.garrettwatson.io/',
       facebook: {
@@ -53,6 +48,11 @@ module.exports = {
         'og:locale': "en_US",
         'og:article:author': "Garrett Watson",
       },
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: path.resolve('./public/index.html'),
+      favicon: path.resolve('./src/favicons/zeno16.ico'),
     }),
   ]
 };
