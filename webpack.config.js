@@ -1,6 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const SocialTags = require('social-tags-webpack-plugin');
 
 // const env = dotenv.config().parsed;
 
@@ -45,8 +47,24 @@ module.exports = {
     hotOnly: true
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      favicon: "./src/favicons/zeno16.ico"
+    }),
     new webpack.HotModuleReplacementPlugin(),
     new Dotenv(),
+    new SocialTags({
+      appUrl: 'https://zenozeno.garrettwatson.io/',
+      facebook: {
+        'og:url': "https://zenozeno.garrettwatson.io/",
+        'og:type': "website",
+        'og:title': "Zenozeno",
+        'og:image': 'src/images/zenozeno.png',
+        'og:description': "AI Quote bot based on GPT-2",
+        'og:site_name': "Zenozeno",
+        'og:locale': "en_US",
+        'og:article:author': "Garrett Watson",
+      },
+    }),
   ]
 };
 
