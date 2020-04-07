@@ -2,14 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const SocialTags = require('social-tags-webpack-plugin');
-
-// const env = dotenv.config().parsed;
-
-// const envKeys = Object.keys(env).reduce((prev, next) => {
-//   prev[`process.env.${next}`] = JSON.stringify(env[next]);
-//   return prev;
-// }, {});
 
 module.exports = {
   entry: ['@babel/polyfill', './src/index.js'],
@@ -48,19 +40,6 @@ module.exports = {
   },
   plugins: [
     new Dotenv(),
-    new SocialTags({
-      appUrl: 'https://zenozeno.garrettwatson.io/',
-      facebook: {
-        'og:url': "https://zenozeno.garrettwatson.io/",
-        'og:type': "website",
-        'og:title': "Zenozeno",
-        'og:image': 'src/images/zenozeno.png',
-        'og:description': "AI Quote bot based on GPT-2",
-        'og:site_name': "Zenozeno",
-        'og:locale': "en_US",
-        'og:article:author': "Garrett Watson",
-      },
-    }),
     new HtmlWebpackPlugin({
       favicon: "./src/favicons/zeno16.ico"
     }),
