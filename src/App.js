@@ -389,6 +389,9 @@ const App = () => {
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
+    const prompts = ['The meaning of life is', 'Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is not', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,'];
+    const defaultPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+
     const response = await fetch(endpoint, {
       method: 'POST',
       mode: 'cors',
@@ -398,7 +401,7 @@ const App = () => {
       },
       redirect: 'follow',
       body: JSON.stringify({
-        input: inputField || 'The meaning of life is',
+        input: inputField || defaultPrompt,
         numberOfQuotes: numberOfQuotes || 1,
         maxQuoteLength: maxQuoteLength || 100,
         topK: topK || 40,
@@ -425,6 +428,7 @@ const App = () => {
     let newFavorites = {...favorites};
     newFavorites[quote] = quote;
     setFavorites(newFavorites);
+    console.log({ favorites });
   };
 
   const handleSubmit = (e) => {
@@ -510,7 +514,13 @@ const App = () => {
       <Quotes isLoading={isLoading}>
         {
           quotes
-            ? quotes.map((quote, index) => <Quote isLoading={isLoading} key={`quote${index}`}>{`${quote}`}.</Quote>)
+            ? quotes.map((quote, index) => <Quote
+              isLoading={isLoading}
+              addToFavorites={addToFavorites}
+              favorites={favorites}
+              key={`quote${index}`}>
+                {`${quote}`}.
+              </Quote>)
             : 'loading'
         }
       </Quotes>
@@ -525,7 +535,14 @@ const App = () => {
           <Favorites showFavorites={showFavorites}>
             {
               Object.keys(favorites).length > 0
-                ? Object.keys(favorites).map((favorite, index) => <Quote isLoading={isLoading} key={`favorite${index}`}>{`${favorite}`}.</Quote>)
+                ? Object.keys(favorites).map((favorite, index) => <Quote
+                  isLoading={isLoading}
+                  addToFavorites={addToFavorites}
+                  favorites={favorites}
+                  key={`favorite${index}`}
+                >
+                  {`${favorite}`}.
+                </Quote>)
                 : 'No favorites yet, click the heart icon beside a quote to save it here.'
             }
           </Favorites>
@@ -540,7 +557,15 @@ const App = () => {
           <History showHistory={showHistory}>
             {
               history.length > 0
-                ? history.map((historyItem, index) => <Quote isLoading={isLoading} fontSize={'8px'} key={`history${index}`}>{`${historyItem}`}.</Quote>)
+                ? history.map((historyItem, index) => <Quote
+                  isLoading={isLoading}
+                  fontSize={'8px'}
+                  addToFavorites={addToFavorites}
+                  favorites={favorites}
+                  key={`history${index}`}
+                >
+                  {`${historyItem}`}.
+                </Quote>)
                 : 'No history yet, click the lightbulb to generate some quotes!'
             }
           </History>
