@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styled, {keyframes, css} from 'styled-components';
 import { createGlobalStyle } from 'styled-components'
 
+import Quote from './components/Quote.js';
+
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 
 // Styled Components
@@ -14,7 +16,7 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 20px 70px 70px auto auto auto 1fr 1fr
+  grid-template: 20px repeat(auto, 7)
   / 25px 1fr 25px;
   grid-gap: calc(5px + 1vmin);
 `;
@@ -71,20 +73,6 @@ const Quotes = styled.div`
   };
 `;
 
-const Quote = styled.span`
-  padding-top: 10px;
-  padding-bottom: 20px;
-  padding-left: 10px;
-  font-family: 'Roboto Mono', monospace;
-  font-size: calc(12px + 1vmin);
-  opacity:${ props => props.isLoading ? '0' : '1' };
-  transition: all 0.2s ease-in-out;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid #ebebe6;
-  };
-`;
-
 const MenuBar = styled.div`
   grid-area: 6 / 2 / 7 / 3;
   width: 81vw;
@@ -124,6 +112,34 @@ const RowContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+`;
+
+const Favorites = styled.div`
+  margin-top: 5px;
+  max-height: ${
+      props => props.showFavorites
+        ? '10000px'
+        : '0px'
+    };
+  transition: all 0.7s ease-in-out;
+  overflow: hidden;
+  font-weight: lighter;
+  font-size: 14px;
+`;
+
+const History = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  max-height: ${
+      props => props.showHistory
+        ? '10000px'
+        : '0px'
+    };
+  transition: all 0.7s ease-in-out;
+  overflow: hidden;
+  font-weight: lighter;
+  font-size: 14px;
 `;
 
 const ContentDescription = styled.p`
@@ -347,6 +363,8 @@ const keyFrameIndicator = keyframes`
 const App = () => {
   // Quotes and Query
   const [quotes, setQuotes] = useState([]);
+  const [favorites, setFavorites] = useState({});
+  const [history, setHistory] = useState([]);
   const [inputField, setInputField] = useState('');
 
   // Controls
@@ -361,6 +379,8 @@ const App = () => {
   const [hasError, setHasError] = useState(false);
 
   // Information and Options
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showTech, setShowTech] = useState(false);
@@ -368,6 +388,9 @@ const App = () => {
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
+    const prompts = ['The meaning of life is', 'Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,'];
+    const defaultPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+
     const response = await fetch(endpoint, {
       method: 'POST',
       mode: 'cors',
@@ -377,7 +400,7 @@ const App = () => {
       },
       redirect: 'follow',
       body: JSON.stringify({
-        input: inputField || 'The meaning of life is',
+        input: inputField || defaultPrompt,
         numberOfQuotes: numberOfQuotes || 1,
         maxQuoteLength: maxQuoteLength || 100,
         topK: topK || 40,
@@ -387,17 +410,30 @@ const App = () => {
     })
       .catch((error) => {
         const message = `Error fetching quote from Zenozeno API: ${error}`;
-        console.log(message);
         setIsLoading(false);
         setHasError(true);
       });
 
     const quoteData = await response.json()
 
-    console.log(quoteData)
     setQuotes(quoteData.quotes);
+    setHistory([...quoteData.quotes, ...history])
     setIsLoading(false);
     setHasError(false);
+
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+    localStorage.setItem('history', JSON.stringify(history));
+  };
+
+  const addToFavorites = (quote, favoritesList) => {
+    let newFavorites = {...favoritesList};
+    if (quote in favorites) {
+      delete newFavorites[quote];
+    } else {
+      newFavorites[quote] = quote;
+    }
+    setFavorites(newFavorites);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
   };
 
   const handleSubmit = (e) => {
@@ -407,19 +443,41 @@ const App = () => {
 
   const handleExpand = (item) => {
     switch (item) {
+      case 'favorites':
+        setShowHistory(false);
+        setShowOptions(false);
+        setShowAbout(false);
+        setShowTech(false);
+        setShowFavorites(!showFavorites);
+        break;
+
+      case 'history':
+        setShowFavorites(false);
+        setShowOptions(false);
+        setShowAbout(false);
+        setShowTech(false);
+        setShowHistory(!showHistory);
+        break;
+
       case 'options':
+        setShowFavorites(false);
+        setShowHistory(false);
         setShowAbout(false);
         setShowTech(false);
         setShowOptions(!showOptions);
         break;
 
       case 'about':
+        setShowFavorites(false);
+        setShowHistory(false);
         setShowOptions(false);
         setShowTech(false);
         setShowAbout(!showAbout);
         break;
 
       case 'tech':
+        setShowFavorites(false);
+        setShowHistory(false);
         setShowAbout(false);
         setShowOptions(false);
         setShowTech(!showTech);
@@ -461,16 +519,68 @@ const App = () => {
       <Quotes isLoading={isLoading}>
         {
           quotes
-            ? quotes.map((quote, index) => <Quote isLoading={isLoading} key={`quote${index}`}>{`${quote}`}.</Quote>)
+            ? quotes.map((quote, index) => <Quote
+              isLoading={isLoading}
+              addToFavorites={addToFavorites}
+              favorites={favorites}
+              key={`quote${index}`}>
+                {`${quote}`}.
+              </Quote>)
             : 'loading'
         }
       </Quotes>
 
       <MenuBar>
         <MenuItem>
+          <MenuHeader onClick={() => handleExpand('favorites')}>
+            <span>Favorites</span>
+            <span>&#9660;</span>
+          </MenuHeader>
+
+          <Favorites showFavorites={showFavorites}>
+            {
+              Object.keys(favorites).length > 0
+                ? Object.keys(favorites).map((favorite, index) => <Quote
+                  isLoading={isLoading}
+                  addToFavorites={addToFavorites}
+                  favorites={favorites}
+                  key={`favorite${index}`}
+                >
+                  {`${favorite}`}.
+                </Quote>)
+                : 'No favorites yet, click the heart icon beside a quote to save it here.'
+            }
+          </Favorites>
+        </MenuItem>
+
+        <MenuItem>
+          <MenuHeader onClick={() => handleExpand('history')}>
+            <span>History</span>
+            <span>&#9660;</span>
+          </MenuHeader>
+
+          <History showHistory={showHistory}>
+            {
+              history.length > 0
+                ? history.map((historyItem, index) => <Quote
+                  isLoading={isLoading}
+                  fontSize={'8px'}
+                  addToFavorites={addToFavorites}
+                  favorites={favorites}
+                  key={`history${index}`}
+                >
+                  {`${historyItem}`}.
+                </Quote>)
+                : 'No history yet, click the lightbulb to generate some quotes!'
+            }
+          </History>
+        </MenuItem>
+
+        <MenuItem>
           <MenuHeader onClick={() => handleExpand('options')}>
             <span>Options</span><span>&#9660;</span>
           </MenuHeader>
+
           <Controls showOptions={showOptions}>
             <ContentDescription>
               You can adjust the way that Zenozeno generates quotes using these controls. Hover or tap a control's label (e.g. "# Quotes") to learn more.
@@ -563,7 +673,7 @@ const App = () => {
           <About showAbout={showAbout}>
             <p>Ever wanted to have your very own insane comedian-philosopher? Look no further.</p>
             <p>Zenozeno is an AI quote bot that does its very best to sound human by predicting the next word in a sequence until it hits a period. </p>
-            <p>Under the hood, Zenozeno was made by fine-tuning the 117M (small) version of <a href="https://openai.com/blog/better-language-models/">OpenAI's GPT-2 language model</a> on a Wikiquotes dataset of around 40,000 quotes.</p>
+            <p>Under the hood, Zenozeno was made by fine-tuning the 117M (small) version of <a href="https://openai.com/blog/better-language-models/">OpenAI's GPT-2 language model</a> on a <a href="https://www.kaggle.com/fantop/wikiquote-short-english-quotes">Wikiquotes dataset</a> of around 40,000 quotes.</p>
             <p>This means that Zenozeno is best at creating short, proverb-like quotables (although GPT-2 makes it pretty good at anything); giving it an input like "Politics is", or "Javascript is not" may work best.</p>
           </About>
         </MenuItem>
