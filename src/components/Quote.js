@@ -31,7 +31,7 @@ const Heart = styled.svg`
   width: 20px;
 
   & .path {
-    fill: ${({ inFavorites }) => inFavorites ? '#ff7744' : '#c9c9c9'};
+    fill: ${({ inFavorites }) => inFavorites ? '#f4af13' : '#c9c9c9'};
 
     &:hover {
       fill: #a8a8a3;
