@@ -389,7 +389,7 @@ const App = () => {
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
-    const prompts = ['The meaning of life is', 'Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is not', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,'];
+    const prompts = ['The meaning of life is', 'Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,'];
     const defaultPrompt = prompts[Math.floor(Math.random() * prompts.length)];
 
     const response = await fetch(endpoint, {
@@ -417,18 +417,24 @@ const App = () => {
 
     const quoteData = await response.json()
 
-    console.log(quoteData)
     setQuotes(quoteData.quotes);
-    setHistory([...history, ...quoteData.quotes])
+    setHistory([...quoteData.quotes, ...history])
     setIsLoading(false);
     setHasError(false);
+
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+    localStorage.setItem('history', JSON.stringify(history));
   };
 
-  const addToFavorites = (quote) => {
-    let newFavorites = {...favorites};
-    newFavorites[quote] = quote;
+  const addToFavorites = (quote, favoritesList) => {
+    let newFavorites = {...favoritesList};
+    if (quote in favorites) {
+      delete newFavorites[quote];
+    } else {
+      newFavorites[quote] = quote;
+    }
     setFavorites(newFavorites);
-    console.log({ favorites });
+    localStorage.setItem('favorites', JSON.stringify(favorites));
   };
 
   const handleSubmit = (e) => {
