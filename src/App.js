@@ -363,9 +363,9 @@ const keyFrameIndicator = keyframes`
 
 const App = () => {
   // Quotes and Query
-  const [quotes, setQuotes] = useState([]);
-  const [favorites, setFavorites] = useState({});
-  const [history, setHistory] = useState([]);
+  const [quotes, setQuotes] = useState(JSON.parse(localStorage.getItem('quotes')) || []);
+  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {});
+  const [history, setHistory] = useState(JSON.parse(localStorage.getItem('quotes')) || []);
   const [inputField, setInputField] = useState('');
 
   // Controls
@@ -386,6 +386,18 @@ const App = () => {
   const [showAbout, setShowAbout] = useState(false);
   const [showTech, setShowTech] = useState(false);
   const [showTooltip, setShowTooltip] = useState('none');
+
+  useEffect(() => {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    localStorage.setItem('history', JSON.stringify(history));
+  }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+  }, [quotes]);
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
@@ -421,9 +433,6 @@ const App = () => {
     setHistory([...quoteData.quotes, ...history])
     setIsLoading(false);
     setHasError(false);
-
-    localStorage.setItem('quotes', JSON.stringify(quotes));
-    localStorage.setItem('history', JSON.stringify(history));
   };
 
   const addToFavorites = (quote, favoritesList) => {
@@ -434,7 +443,6 @@ const App = () => {
       newFavorites[quote] = quote;
     }
     setFavorites(newFavorites);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
   };
 
   const handleSubmit = (e) => {
