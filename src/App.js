@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, {keyframes, css} from 'styled-components';
 import { createGlobalStyle } from 'styled-components'
 
