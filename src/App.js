@@ -144,7 +144,13 @@ const History = styled.div`
 `;
 
 const ClearHistory = styled.span`
-  margin-right: 5px;
+  margin-right: 10px;
+  font-size: 11px;
+  padding: 2px;
+  border-radius: 1px;
+  background: #f7f7f2;
+  box-shadow:  2px 2px 1px #d2d2ce,
+              -2px -2px 1px #ffffff;
 `;
 
 const ContentDescription = styled.p`
@@ -621,7 +627,7 @@ const App = () => {
           <MenuHeader onClick={() => handleExpand('history')}>
             <span>History ({history.length})</span>
             <span>
-              <ClearHistory>Clear</ClearHistory>
+              <ClearHistory onClick={() => setHistory([])}>Clear</ClearHistory>
               &#9660;
             </span>
           </MenuHeader>
