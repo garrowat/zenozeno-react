@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes, css } from 'styled-components';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 const QuoteContents = styled.span`
   display: flex;
@@ -9,7 +10,7 @@ const QuoteContents = styled.span`
   padding-left: 10px;
   font-family: 'Roboto Mono', monospace;
   font-size: ${ ({ fontSize }) => fontSize ? `calc(${fontSize} + 1vmin)` : 'calc(12px + 1vmin)'};
-  opacity:${ ({ isLoading }) => isLoading ? '0' : '1' };
+  opacity:${ ({ isLoading, isMain }) => isMain && isLoading ? '0' : '1' };
   transition: all 0.2s ease-in-out;
 
   &:not(:last-child) {
@@ -41,6 +42,7 @@ const Heart = styled.svg`
 
 const Push = styled.div`
   margin-left: auto;
+  margin-right: 5px;
 `;
 
 const CopyButton = styled.span`
@@ -53,19 +55,29 @@ const CopyButton = styled.span`
   };
 `;
 
-export default ({  fontSize, isLoading, children, favorites, addToFavorites }) => {
+export default ({
+  fontSize,
+  isLoading,
+  isMain,
+  children,
+  favorites,
+  addToFavorites,
+  handleCopied,
+}) => {
   const inFavorites = favorites && [...children][0] in favorites;
   return (
-    <QuoteContents isLoading={isLoading} fontSize={fontSize}>
+    <QuoteContents isLoading={isLoading} fontSize={fontSize} isMain={isMain}>
       <QuoteText>
         {children}
       </QuoteText>
 
       <Push />
 
-      <CopyButton>
-        &#10697;
-      </CopyButton>
+      <CopyToClipboard text={children[0]} onCopy={handleCopied}>
+        <CopyButton>
+          &#10697;
+        </CopyButton>
+      </CopyToClipboard>
 
       <FavoriteButton onClick={() => addToFavorites([...children][0], favorites)}>
         <Heart viewBox="0 0 32 29.6" inFavorites={inFavorites}>
