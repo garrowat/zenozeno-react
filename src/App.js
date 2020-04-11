@@ -17,8 +17,8 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 20px repeat(auto, 7)
-  / 25px 1fr 25px;
+  grid-template: 20px repeat(auto, 8)
+  / 25px auto 25px;
   grid-gap: calc(5px + 1vmin);
 `;
 
@@ -141,6 +141,10 @@ const History = styled.div`
   overflow: hidden;
   font-weight: lighter;
   font-size: 14px;
+`;
+
+const ClearHistory = styled.span`
+  margin-right: 5px;
 `;
 
 const ContentDescription = styled.p`
@@ -347,6 +351,21 @@ const ToolTip = styled.div`
   transition: opacity 0.2s ease-in-out;
 `;
 
+const CopySnackBar = styled.div`
+  position: absolute;
+  top: 10px;
+  width: 100px;
+  left: 45vw;
+  padding: 10px;
+  text-align: center;
+  color: #eee;
+  font-size: 11px;
+  background: #666;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
+  opacity: ${({ showCopied }) => showCopied === true ? 0.95 : 0};
+`;
+
 const keyFrameIndicator = keyframes`
   0% {
     background: #dabb33;
@@ -365,7 +384,7 @@ const App = () => {
   // Quotes and Query
   const [quotes, setQuotes] = useState(JSON.parse(localStorage.getItem('quotes')) || []);
   const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || {});
-  const [history, setHistory] = useState(JSON.parse(localStorage.getItem('quotes')) || []);
+  const [history, setHistory] = useState(JSON.parse(localStorage.getItem('history')) || []);
   const [inputField, setInputField] = useState('');
 
   // Controls
@@ -378,6 +397,10 @@ const App = () => {
   // API Fetch State
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  // Other
+  const [wasCopied, setWasCopied] = useState(false);
+  const [showCopied, setShowCopied] = useState(null);
 
   // Information and Options
   const [showFavorites, setShowFavorites] = useState(false);
@@ -392,16 +415,32 @@ const App = () => {
   }, [favorites]);
 
   useEffect(() => {
-    localStorage.setItem('history', JSON.stringify(history));
+    let newHistory = [...history];
+    if (newHistory.length > 50) {
+      newHistory = newHistory.slice(0, 50)
+    }
+    localStorage.setItem('history', JSON.stringify(newHistory));
   }, [history]);
 
   useEffect(() => {
     localStorage.setItem('quotes', JSON.stringify(quotes));
   }, [quotes]);
 
+  useEffect(() => {
+    if (showCopied === null) {
+      setShowCopied('false');
+    } else {
+      setShowCopied(true);
+      let copyTimer = setTimeout(() => setShowCopied(false), 2000);
+      return () => {
+        clearTimeout(copyTimer)
+      };
+    }
+  }, [wasCopied]);
+
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
-    const prompts = ['The meaning of life is', 'Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,'];
+    const prompts = ['Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,', 'The perfect grilled-cheese sandwich,', 'Two men walk into a bar,','People say I\'m', 'As the shoe said to the hat,'];
     const defaultPrompt = prompts[Math.floor(Math.random() * prompts.length)];
 
     const response = await fetch(endpoint, {
@@ -430,7 +469,12 @@ const App = () => {
     const quoteData = await response.json()
 
     setQuotes(quoteData.quotes);
-    setHistory([...quoteData.quotes, ...history])
+    if (history.length > 50) {
+      const newHistory = [...history].slice(0, 50);
+      setHistory(newHistory);
+    } else {
+      setHistory([...quoteData.quotes, ...history])
+    }
     setIsLoading(false);
     setHasError(false);
   };
@@ -443,6 +487,10 @@ const App = () => {
       newFavorites[quote] = quote;
     }
     setFavorites(newFavorites);
+  };
+
+  const handleCopied = () => {
+    setWasCopied(!wasCopied);
   };
 
   const handleSubmit = (e) => {
@@ -497,6 +545,7 @@ const App = () => {
   return (
     <GridContainer>
       <GlobalStyle />
+
       <Title>
         Zenozeno
       </Title>
@@ -518,7 +567,8 @@ const App = () => {
           type="text"
           onChange={(e) => setInputField(e.target.value)}
           value={inputField}
-          placeholder="Type a partial sentence, ie. 'Life is'"
+          placeholder="Try a partial sentence, ie. 'Life is'"
+          ref={input => input && input.focus()}
         />
         <SubmitButton isLoading={isLoading} type="submit" onClick={handleSubmit}>
           <ButtonIcon>💡</ButtonIcon>
@@ -530,6 +580,8 @@ const App = () => {
           quotes
             ? quotes.map((quote, index) => <Quote
               isLoading={isLoading}
+              isMain={true}
+              handleCopied={handleCopied}
               addToFavorites={addToFavorites}
               favorites={favorites}
               key={`quote${index}`}>
@@ -542,7 +594,7 @@ const App = () => {
       <MenuBar>
         <MenuItem>
           <MenuHeader onClick={() => handleExpand('favorites')}>
-            <span>Favorites</span>
+            <span>Favorites ({Object.keys(favorites).length})</span>
             <span>&#9660;</span>
           </MenuHeader>
 
@@ -551,6 +603,9 @@ const App = () => {
               Object.keys(favorites).length > 0
                 ? Object.keys(favorites).map((favorite, index) => <Quote
                   isLoading={isLoading}
+                  isMain={false}
+                  handleCopied={handleCopied}
+                  fontSize={'8px'}
                   addToFavorites={addToFavorites}
                   favorites={favorites}
                   key={`favorite${index}`}
@@ -564,8 +619,11 @@ const App = () => {
 
         <MenuItem>
           <MenuHeader onClick={() => handleExpand('history')}>
-            <span>History</span>
-            <span>&#9660;</span>
+            <span>History ({history.length})</span>
+            <span>
+              <ClearHistory>Clear</ClearHistory>
+              &#9660;
+            </span>
           </MenuHeader>
 
           <History showHistory={showHistory}>
@@ -573,6 +631,8 @@ const App = () => {
               history.length > 0
                 ? history.map((historyItem, index) => <Quote
                   isLoading={isLoading}
+                  isMain={false}
+                  handleCopied={handleCopied}
                   fontSize={'8px'}
                   addToFavorites={addToFavorites}
                   favorites={favorites}
@@ -706,6 +766,10 @@ const App = () => {
       <Disclaimer>
         Zenozeno does not store user data; any persisted data is stored locally on your device.
       </Disclaimer>
+
+      <CopySnackBar showCopied={showCopied}>
+        Copied to Clipboard!
+      </CopySnackBar>
     </GridContainer>
   );
 };
