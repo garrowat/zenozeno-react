@@ -17,7 +17,7 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 20px repeat(8, auto) / 25px 1fr 25px;
+  grid-template: 20px repeat(8, auto) / 25px auto 25px;
   grid-gap: calc(5px + 1vmin);
   overflow: hidden;
 `;
