@@ -455,7 +455,7 @@ const App = () => {
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
-    const prompts = ['Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,', 'The perfect grilled-cheese sandwich,', 'A skeleton walks into a bar,','People say I\'m', 'As the shoe said to the hat,'];
+    const prompts = ['Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,', 'The perfect grilled-cheese sandwich,', 'A skeleton walks into a bar,','People say I\'m', 'As the shoe said to the hat,', 'As the cat said to the dog,', 'As the Horse said to the Doctor,'];
     const defaultPrompt = prompts[Math.floor(Math.random() * prompts.length)];
 
     const response = await fetch(endpoint, {
