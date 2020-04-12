@@ -17,8 +17,7 @@ const GlobalStyle = createGlobalStyle`
 `
 const GridContainer = styled.div`
   display: grid;
-  grid-template: 20px repeat(auto, 8)
-  / 25px auto 25px;
+  grid-template: 20px repeat(8, auto) / 25px 1fr 25px;
   grid-gap: calc(5px + 1vmin);
 `;
 
@@ -80,6 +79,7 @@ const MenuBar = styled.div`
   padding-left: 1px;
   display: grid;
   grid-gap: 10px;
+  overflow: hidden;
 `;
 
 const MenuItem = styled.div`
@@ -151,6 +151,12 @@ const ClearHistory = styled.span`
   background: #f7f7f2;
   box-shadow:  2px 2px 1px #d2d2ce,
               -2px -2px 1px #ffffff;
+
+  &:hover {
+    background: #f9f9f6;
+    box-shadow:  1px 1px 1px #d2d2ce,
+              -1px -1px 1px #ffffff;
+  };
 `;
 
 const ContentDescription = styled.p`
@@ -233,6 +239,10 @@ const Disclaimer = styled.span`
   font-size: 12px;
 `;
 
+const Footer = styled.div`
+  grid-area: 8 / 1 / 9 / 4;
+`;
+
 const Indicator = styled.div`
   grid-area: 4 / 1 / 5 / 2;
   place-self: center end;
@@ -303,7 +313,7 @@ const SliderControl = styled.input`
   &::-webkit-slider-runnable-track {
     margin-top: 10px;
     margin-bottom: 10px;
-    width: 100%;
+    max-width: 100%;
     height: 3px;
     cursor: pointer;
     animate: 0.2s;
@@ -361,7 +371,8 @@ const CopySnackBar = styled.div`
   position: absolute;
   top: 10px;
   width: 100px;
-  left: 45vw;
+  left: 50%;
+  margin-left: -50px;
   padding: 10px;
   text-align: center;
   color: #eee;
@@ -472,6 +483,10 @@ const App = () => {
         setHasError(true);
       });
 
+    if (!inputField) {
+      setInputField(defaultPrompt);
+    }
+
     const quoteData = await response.json()
 
     setQuotes(quoteData.quotes);
@@ -574,7 +589,7 @@ const App = () => {
           onChange={(e) => setInputField(e.target.value)}
           value={inputField}
           placeholder="Try a partial sentence, ie. 'Life is'"
-          ref={input => input && input.focus()}
+          ref={input => input && !inputField && input.focus()}
         />
         <SubmitButton isLoading={isLoading} type="submit" onClick={handleSubmit}>
           <ButtonIcon>💡</ButtonIcon>
@@ -776,6 +791,7 @@ const App = () => {
       <CopySnackBar showCopied={showCopied}>
         Copied to Clipboard!
       </CopySnackBar>
+      <Footer />
     </GridContainer>
   );
 };
