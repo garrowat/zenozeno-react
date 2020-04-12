@@ -35,7 +35,7 @@ const Heart = styled.svg`
     fill: ${({ inFavorites }) => inFavorites ? '#f4af13' : '#c9c9c9'};
 
     &:hover {
-      fill: #a8a8a3;
+      fill: ${({ inFavorites }) => inFavorites ? '#a15a00' : '#a8a8a3'};
     };
   };
 `;
