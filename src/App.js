@@ -19,6 +19,7 @@ const GridContainer = styled.div`
   display: grid;
   grid-template: 20px repeat(8, auto) / 25px 1fr 25px;
   grid-gap: calc(5px + 1vmin);
+  overflow: hidden;
 `;
 
 const Title = styled.span`
@@ -79,11 +80,11 @@ const MenuBar = styled.div`
   padding-left: 1px;
   display: grid;
   grid-gap: 10px;
-  overflow: hidden;
 `;
 
 const MenuItem = styled.div`
   padding: 5px 10px 5px 10px;
+  overflow: hidden;
   color: #777;
   font-size: 16px;
   font-family: 'Roboto Mono', monospace;
@@ -112,7 +113,7 @@ const MenuHeader = styled.p`
 const RowContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  flex-direction: row;
+  overflow: hidden;
 `;
 
 const Favorites = styled.div`
@@ -123,7 +124,6 @@ const Favorites = styled.div`
         : '0px'
     };
   transition: all 0.7s ease-in-out;
-  overflow: hidden;
   font-weight: lighter;
   font-size: 14px;
 `;
@@ -160,31 +160,28 @@ const ClearHistory = styled.span`
 `;
 
 const ContentDescription = styled.p`
-
+  overflow: hidden;
 `;
 
 const Controls = styled.div`
   display: flex;
   flex-direction: column;
   max-height: ${
-      props => props.showOptions
-        ? '1000px'
-        : '0px'
-    };
-  transition: all 0.7s ease-in-out;
-  grid-area: 7 / 2 / 8 / 3;
-  place-self: center stretch;
-  overflow: hidden;
+    props => props.showOptions
+      ? '10000px'
+      : '0px'
+  };
+  transition: max-height 0.7s ease-in-out;
   flex-wrap: wrap;
-  justify-content: flex-start;
   padding: 10px;
   padding-top: 0px;
+  overflow: hidden;
   font-weight: lighter;
   font-size: 14px;
 `;
 
 const Control = styled.div`
-  display: flex;
+  display: ${ props => props.showOptions ? 'flex' : 'none'};
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -348,7 +345,7 @@ const ButtonIcon = styled.span`
 
 const ToolTip = styled.div`
   position: absolute;
-  width: 150px;
+  max-width: 150px;
   padding: 10px;
   border-radius: 5px;
   background: #777;
@@ -360,10 +357,11 @@ const ToolTip = styled.div`
     ? '1'
     : '0'
   };
-  visibility: ${props => props.showTooltip === props.tipName
+  /* visibility: ${props => props.showTooltip === props.tipName
     ? 'visible'
     : 'hidden'
-  };
+  }; */
+  display: ${props => props.showTooltip ? 'block' : 'none'};
   transition: opacity 0.2s ease-in-out;
 `;
 
@@ -457,7 +455,7 @@ const App = () => {
 
   const getQuotes = async (endpoint) => {
     setIsLoading(true);
-    const prompts = ['Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,', 'The perfect grilled-cheese sandwich,', 'Two men walk into a bar,','People say I\'m', 'As the shoe said to the hat,'];
+    const prompts = ['Life is not', 'Why did the chicken cross the road?', 'Jeff is', 'Karen is', 'A horse and a priest walk into a bar,', 'Knock knock. Who\'s there?', 'Bananas are', 'When in doubt,', 'The perfect grilled-cheese sandwich,', 'A skeleton walks into a bar,','People say I\'m', 'As the shoe said to the hat,'];
     const defaultPrompt = prompts[Math.floor(Math.random() * prompts.length)];
 
     const response = await fetch(endpoint, {
@@ -676,7 +674,7 @@ const App = () => {
               You can adjust the way that Zenozeno generates quotes using these controls. Hover or tap a control's label (e.g. "# Quotes") to learn more.
             </ContentDescription>
             <RowContainer>
-              <Control>
+              <Control showOptions={showOptions}>
                 <ControlLabel
                   htmlFor="numberOfQuotes"
                   title="Choose how many quotes to generate at once; more take longer to load."
@@ -684,7 +682,7 @@ const App = () => {
                   onMouseLeave={() => setShowTooltip('none')}
                 >
                   # Quotes&nbsp;
-                  <ToolTip tipName="numberOfQuotes" showTooltip={showTooltip}>
+                  <ToolTip tipName="numberOfQuotes" showTooltip={showTooltip} >
                     Choose how many quotes to generate at once; more take longer to load.
                   </ToolTip>
                 </ControlLabel>
@@ -692,7 +690,7 @@ const App = () => {
                 <ControlValue>{numberOfQuotes}</ControlValue>
               </Control>
 
-              <Control>
+              <Control showOptions={showOptions}>
                 <ControlLabel
                   htmlFor="maxQuoteLength"
                   title="Longer quotes take longer to load, although they usually don't get very long."
@@ -700,7 +698,7 @@ const App = () => {
                   onMouseLeave={() => setShowTooltip('none')}
                 >
                   Max Length&nbsp;
-                  <ToolTip tipName="maxQuoteLength" showTooltip={showTooltip}>
+                  <ToolTip tipName="maxQuoteLength" showTooltip={showTooltip} >
                     Longer quotes take longer to load, although they usually don't get very long.
                   </ToolTip>
                 </ControlLabel>
@@ -708,7 +706,7 @@ const App = () => {
                 <ControlValue>{maxQuoteLength}</ControlValue>
               </Control>
 
-              <Control>
+              <Control showOptions={showOptions}>
                 <ControlLabel
                   htmlFor="topK"
                   title="Higher Top K decreases variance by eliminating unlikely words."
@@ -716,7 +714,7 @@ const App = () => {
                   onMouseLeave={() => setShowTooltip('none')}
                 >
                   Top K&nbsp;
-                  <ToolTip tipName="topK" showTooltip={showTooltip}>
+                  <ToolTip tipName="topK" showTooltip={showTooltip} showOptions={showOptions} >
                     Higher Top K decreases variance by eliminating unlikely words.
                   </ToolTip>
                 </ControlLabel>
@@ -724,7 +722,7 @@ const App = () => {
                 <ControlValue>{topK}</ControlValue>
               </Control>
 
-              <Control>
+              <Control showOptions={showOptions}>
                 <ControlLabel
                   htmlFor="topP"
                   title="Higher Top P decreases variance by also eliminating unlikely words, but in a different way."
@@ -732,7 +730,7 @@ const App = () => {
                   onMouseLeave={() => setShowTooltip('none')}
                 >
                   Top P&nbsp;
-                  <ToolTip tipName="topP" showTooltip={showTooltip}>
+                  <ToolTip tipName="topP" showTooltip={showTooltip} >
                     Higher Top P decreases variance by also eliminating unlikely words, but in a different way.
                   </ToolTip>
                 </ControlLabel>
@@ -740,7 +738,7 @@ const App = () => {
                 <ControlValue>{topP}</ControlValue>
               </Control>
 
-              <Control>
+              <Control showOptions={showOptions}>
                 <ControlLabel
                   htmlFor="temperature"
                   title="Lower temperature makes the distribution of possible words less random."
@@ -748,7 +746,7 @@ const App = () => {
                   onMouseLeave={() => setShowTooltip('none')}
                 >
                   Temperature&nbsp;
-                  <ToolTip tipName="temperature" showTooltip={showTooltip}>
+                  <ToolTip tipName="temperature" showTooltip={showTooltip} >
                     Lower temperature makes the distribution of possible words less random.
                   </ToolTip>
                 </ControlLabel>
