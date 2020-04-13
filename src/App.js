@@ -117,7 +117,7 @@ const RowContainer = styled.div`
 `;
 
 const Favorites = styled.div`
-  margin-top: 5px;
+  margin-top: 10px;
   max-height: ${
       props => props.showFavorites
         ? '10000px'
@@ -126,6 +126,10 @@ const Favorites = styled.div`
   transition: all 0.7s ease-in-out;
   font-weight: lighter;
   font-size: 14px;
+`;
+
+const Empty = styled.div`
+  padding-top: 5px;
 `;
 
 const History = styled.div`
@@ -631,7 +635,7 @@ const App = () => {
                 >
                   {`${favorite}`}.
                 </Quote>)
-                : 'No favorites yet, click the heart icon beside a quote to save it here.'
+                : <Empty>No favorites yet, click the heart icon beside a quote to save it here.</Empty>
             }
           </Favorites>
         </MenuItem>
