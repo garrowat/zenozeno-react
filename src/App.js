@@ -360,10 +360,10 @@ const ToolTip = styled.div`
     ? '1'
     : '0'
   };
-  /* visibility: ${props => props.showTooltip === props.tipName
+  visibility: ${props => props.showTooltip === props.tipName
     ? 'visible'
     : 'hidden'
-  }; */
+  };
   display: ${props => props.showTooltip ? 'block' : 'none'};
   transition: opacity 0.2s ease-in-out;
 `;
